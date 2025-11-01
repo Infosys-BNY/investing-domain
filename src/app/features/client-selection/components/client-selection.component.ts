@@ -44,7 +44,7 @@ export class ClientSelectionComponent implements OnInit {
   sortColumn = signal<string>('clientName');
   sortDirection = signal<'asc' | 'desc'>('asc');
 
-  displayedColumns = ['clientName', 'accountId', 'accountType', 'marketValue', 'cashBalance', 'ytdPerformance', 'lastActivity', 'riskProfile', 'actions'];
+  displayedColumns = ['accountId', 'clientName', 'marketValue', 'ytdPerformance', 'actions'];
 
   filteredAndSortedClients = computed(() => {
     let filtered = this.clients();
@@ -147,7 +147,8 @@ export class ClientSelectionComponent implements OnInit {
     }
   }
 
-  formatCurrency(value: number): string {
+  formatCurrency(value: number | undefined): string {
+    if (value === undefined) return '$0.00';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -156,7 +157,8 @@ export class ClientSelectionComponent implements OnInit {
     }).format(value);
   }
 
-  formatPercentage(value: number): string {
+  formatPercentage(value: number | undefined): string {
+    if (value === undefined) return '0.00%';
     return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
   }
 
