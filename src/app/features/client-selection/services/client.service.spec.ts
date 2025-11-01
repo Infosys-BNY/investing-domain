@@ -169,7 +169,7 @@ describe('ClientService', () => {
 
   describe('with useMockData = false', () => {
     beforeEach(() => {
-      (service as any).useMockData = false;
+      (service as unknown as { useMockData: boolean }).useMockData = false;
     });
 
     it('should call API service for searchClients', (done) => {
