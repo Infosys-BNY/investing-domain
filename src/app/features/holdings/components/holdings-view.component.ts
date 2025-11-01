@@ -178,6 +178,10 @@ export class HoldingsViewComponent implements OnInit, OnDestroy {
     this.sortDirection.set(sort.direction as 'asc' | 'desc' || 'asc');
   }
 
+  onFilterChange(event: any): void {
+    this.activeFilter.set(event.value);
+  }
+
   applyFilter(filter: FilterType): void {
     this.activeFilter.set(filter);
   }

@@ -431,7 +431,14 @@ export class HoldingsService {
     const clientNames: Record<string, string> = {
       'CLT-001': 'John Smith',
       'CLT-002': 'Sarah Johnson',
-      'CLT-003': 'Michael Chen'
+      'CLT-003': 'Michael Chen',
+      'CLT-004': 'Davis, Patricia',
+      'CLT-005': 'Miller, James',
+      'CLT-006': 'Wilson, Jennifer',
+      'CLT-007': 'Brown, Michael',
+      'CLT-008': 'Taylor, Sarah',
+      'CLT-009': 'Anderson, David',
+      'CLT-010': 'Martinez, Linda'
     };
     return clientNames[clientId] || 'Unknown Client';
   }
