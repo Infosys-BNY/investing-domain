@@ -1,0 +1,303 @@
+<div class="holdings-container">
+  <header class="holdings-header">
+    <div class="header-content">
+      <button mat-icon-button (click)="navigateBack()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      
+      @if (accountInfo(); as account) {
+        <div class="client-info">
+          <h1 class="client-name">{{ account.clientName }}</h1>
+          <div class="account-details">
+            <span class="account-number">{{ account.accountId }}</span>
+            <span class="separator">•</span>
+            <span class="account-type">{{ account.accountType }}</span>
+          </div>
+        </div>
+        
+        <div class="portfolio-value">
+          <div class="value-label">Total Portfolio Value</div>
+          <div class="value-amount">{{ formatCurrency(account.totalPortfolioValue) }}</div>
+        </div>
+        
+        @if (account.totalCashPosition) {
+          <div class="cash-position">
+            <div class="value-label">Cash Position</div>
+            <div class="value-amount">{{ formatCurrency(account.totalCashPosition) }}</div>
+          </div>
+        }
+        
+        <div class="last-updated">
+          <mat-icon>schedule</mat-icon>
+          <span>{{ formatDate(lastUpdated()) }}</span>
+          <button mat-icon-button (click)="refreshPrices()" [disabled]="loading()">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading holdings data...</p>
+    </div>
+  } @else {
+    @if (summary(); as summaryData) {
+      <section class="portfolio-summary">
+        <div class="summary-card">
+          <div class="card-label">Total Market Value</div>
+          <div class="card-value">{{ formatCurrency(summaryData.totalMarketValue) }}</div>
+        </div>
+        
+        <div class="summary-card">
+          <div class="card-label">Total Cost Basis</div>
+          <div class="card-value">{{ formatCurrency(summaryData.totalCostBasis) }}</div>
+        </div>
+        
+        <div class="summary-card" [ngClass]="getGainLossClass(summaryData.totalUnrealizedGainLoss)">
+          <div class="card-label">Total Unrealized G/L</div>
+          <div class="card-value">
+            {{ formatCurrency(summaryData.totalUnrealizedGainLoss) }}
+            <span class="percentage">({{ formatPercentage(summaryData.totalUnrealizedGainLossPercent) }})</span>
+          </div>
+        </div>
+        
+        @if (summaryData.totalRealizedGainLossYTD) {
+          <div class="summary-card">
+            <div class="card-label">Realized G/L YTD</div>
+            <div class="card-value">{{ formatCurrency(summaryData.totalRealizedGainLossYTD) }}</div>
+          </div>
+        }
+        
+        <div class="summary-card">
+          <div class="card-label">Number of Holdings</div>
+          <div class="card-value">{{ summaryData.numberOfHoldings }}</div>
+        </div>
+        
+        @if (summaryData.portfolioBeta) {
+          <div class="summary-card">
+            <div class="card-label">Portfolio Beta</div>
+            <div class="card-value">{{ formatNumber(summaryData.portfolioBeta) }}</div>
+          </div>
+        }
+        
+        @if (summaryData.dividendYield) {
+          <div class="summary-card">
+            <div class="card-label">Dividend Yield</div>
+            <div class="card-value">{{ formatPercentage(summaryData.dividendYield) }}</div>
+          </div>
+        }
+      </section>
+    }
+
+    <section class="holdings-content">
+      <div class="toolbar">
+        <div class="filter-section">
+          <mat-chip-listbox [value]="activeFilter()" (selectionChange)="onFilterChange($event)">
+            <mat-chip-option value="all" selected>Show All</mat-chip-option>
+            <mat-chip-option value="gains">Gains Only</mat-chip-option>
+            <mat-chip-option value="losses">Losses Only</mat-chip-option>
+            <mat-chip-option value="equities">Equities</mat-chip-option>
+            <mat-chip-option value="fixedIncome">Fixed Income</mat-chip-option>
+            <mat-chip-option value="alternatives">Alternatives</mat-chip-option>
+            <mat-chip-option value="largePositions">Large Positions (&gt;5%)</mat-chip-option>
+          </mat-chip-listbox>
+        </div>
+        
+        <div class="toolbar-actions">
+          <mat-form-field class="search-field">
+            <mat-label>Search</mat-label>
+            <input matInput [(ngModel)]="searchTerm" placeholder="Symbol or Security Name">
+            <mat-icon matPrefix>search</mat-icon>
+          </mat-form-field>
+          
+          <button mat-raised-button [matMenuTriggerFor]="exportMenu" [disabled]="exporting()">
+            <mat-icon>download</mat-icon>
+            Export
+          </button>
+          <mat-menu #exportMenu="matMenu">
+            <button mat-menu-item (click)="exportHoldings('xlsx')">
+              <mat-icon>table_chart</mat-icon>
+              <span>Export to Excel</span>
+            </button>
+            <button mat-menu-item (click)="exportHoldings('csv')">
+              <mat-icon>description</mat-icon>
+              <span>Export to CSV</span>
+            </button>
+            <button mat-menu-item (click)="exportHoldings('pdf')">
+              <mat-icon>picture_as_pdf</mat-icon>
+              <span>Export to PDF</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+
+      @if (filteredAndSortedHoldings().length === 0) {
+        <div class="empty-state">
+          <mat-icon>inbox</mat-icon>
+          <h3>No holdings found</h3>
+          <p>Try adjusting your filters or search term.</p>
+        </div>
+      } @else {
+        <div class="table-container">
+          <table mat-table [dataSource]="filteredAndSortedHoldings()" matSort (matSortChange)="onSort($event)" class="holdings-table">
+            
+            <ng-container matColumnDef="symbol">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Symbol</th>
+              <td mat-cell *matCellDef="let holding">
+                <div class="symbol-cell">
+                  <span class="symbol">{{ holding.symbol }}</span>
+                  @if (isTopGainer(holding.symbol)) {
+                    <mat-icon class="indicator top-gainer">trending_up</mat-icon>
+                  }
+                  @if (isTopLoser(holding.symbol)) {
+                    <mat-icon class="indicator top-loser">trending_down</mat-icon>
+                  }
+                  @if (isConcentratedPosition(holding.portfolioPercent)) {
+                    <mat-icon class="indicator concentrated">warning</mat-icon>
+                  }
+                  @if (holding.hasAlerts) {
+                    <mat-icon class="indicator alert">notifications</mat-icon>
+                  }
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="securityName">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Security Name</th>
+              <td mat-cell *matCellDef="let holding" class="security-name">{{ holding.securityName }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">Quantity</th>
+              <td mat-cell *matCellDef="let holding" class="text-right">{{ formatNumber(holding.quantity) }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="price">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">Price</th>
+              <td mat-cell *matCellDef="let holding" class="text-right">
+                <div class="price-cell">
+                  <span>{{ formatCurrency(holding.price) }}</span>
+                  @if (holding.priceChange && holding.priceChangePercent) {
+                    <span class="price-change" [ngClass]="getGainLossClass(holding.priceChange)">
+                      {{ formatCurrencyWithSign(holding.priceChange) }} ({{ formatPercentage(holding.priceChangePercent) }})
+                    </span>
+                  }
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="costBasis">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">Cost Basis</th>
+              <td mat-cell *matCellDef="let holding" class="text-right">{{ formatCurrency(holding.costBasis) }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="totalCost">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">Total Cost</th>
+              <td mat-cell *matCellDef="let holding" class="text-right">{{ formatCurrency(holding.totalCost) }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="marketValue">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">Market Value</th>
+              <td mat-cell *matCellDef="let holding" class="text-right font-semibold">{{ formatCurrency(holding.marketValue) }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="unrealizedGainLoss">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">Unrealized G/L</th>
+              <td mat-cell *matCellDef="let holding" class="text-right" [ngClass]="getGainLossClass(holding.unrealizedGainLoss)">
+                {{ formatCurrency(holding.unrealizedGainLoss) }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="unrealizedGainLossPercent">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">% G/L</th>
+              <td mat-cell *matCellDef="let holding" class="text-right" [ngClass]="getGainLossClass(holding.unrealizedGainLoss)">
+                {{ formatPercentage(holding.unrealizedGainLossPercent) }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="portfolioPercent">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">% of Portfolio</th>
+              <td mat-cell *matCellDef="let holding" class="text-right">{{ formatPercentage(holding.portfolioPercent) }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="sector">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Sector</th>
+              <td mat-cell *matCellDef="let holding">{{ holding.sector }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="assetClass">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Asset Class</th>
+              <td mat-cell *matCellDef="let holding">{{ holding.assetClass }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+                class="holdings-row"
+                [class.expanded]="expandedSymbol() === row.symbol"
+                (click)="toggleTaxLots(row.symbol)"></tr>
+            
+            @if (expandedSymbol()) {
+              <tr class="tax-lot-row">
+                <td [attr.colspan]="displayedColumns.length">
+                  @if (loadingTaxLots()) {
+                    <div class="tax-lot-loading">
+                      <mat-spinner diameter="30"></mat-spinner>
+                      <span>Loading tax lots...</span>
+                    </div>
+                  } @else if (taxLots().length > 0) {
+                    <div class="tax-lot-container">
+                      <h4>Tax Lots for {{ expandedSymbol() }}</h4>
+                      <table class="tax-lot-table">
+                        <thead>
+                          <tr>
+                            <th>Purchase Date</th>
+                            <th class="text-right">Quantity</th>
+                            <th class="text-right">Cost Basis</th>
+                            <th class="text-right">Current Value</th>
+                            <th class="text-right">Gain/Loss</th>
+                            <th class="text-right">% G/L</th>
+                            <th>Holding Period</th>
+                            <th class="text-right">Tax Impact</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (lot of taxLots(); track lot.purchaseDate) {
+                            <tr>
+                              <td>{{ formatDate(lot.purchaseDate) }}</td>
+                              <td class="text-right">{{ formatNumber(lot.quantity) }}</td>
+                              <td class="text-right">{{ formatCurrency(lot.costBasis) }}</td>
+                              <td class="text-right">{{ formatCurrency(lot.currentValue) }}</td>
+                              <td class="text-right" [ngClass]="getGainLossClass(lot.gainLoss)">
+                                {{ formatCurrency(lot.gainLoss) }}
+                              </td>
+                              <td class="text-right" [ngClass]="getGainLossClass(lot.gainLoss)">
+                                {{ formatPercentage(lot.gainLossPercent) }}
+                              </td>
+                              <td>
+                                <span class="holding-period" [class.long-term]="lot.holdingPeriod === 'Long-term'">
+                                  {{ lot.holdingPeriod }}
+                                </span>
+                              </td>
+                              <td class="text-right">
+                                @if (lot.taxImpact) {
+                                  {{ formatCurrency(lot.taxImpact) }}
+                                }
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  }
+                </td>
+              </tr>
+            }
+          </table>
+        </div>
+      }
+    </section>
+  }
+</div>
