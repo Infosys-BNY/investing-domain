@@ -1,0 +1,171 @@
+<div class="client-selection-container">
+  <!-- Professional Header Bar -->
+  <header class="advisor-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1 class="page-title">Client Selection</h1>
+        <span class="advisor-info">Advisor: advisor-123</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <!-- Sidebar for Recent Clients -->
+    <aside class="sidebar" *ngIf="recentClients().length > 0">
+      <div class="sidebar-header">
+        <h2>Recent Clients</h2>
+        <span class="client-count">{{ recentClients().length }} clients</span>
+      </div>
+      <div class="recent-clients-list">
+        <div class="recent-client-item" 
+             *ngFor="let client of recentClients(); trackBy: trackByClientId" 
+             (click)="viewRecentClientHoldings(client)"
+             (keyup.enter)="viewRecentClientHoldings(client)"
+             tabindex="0"
+             role="button"
+             [attr.aria-label]="'View holdings for ' + client.clientName">
+          <div class="client-info">
+            <div class="client-name">{{ client.clientName }}</div>
+            <div class="client-details">
+              <span class="account-id">{{ client.accounts[0]?.accountId }}</span>
+              <span class="separator">•</span>
+              <span class="market-value">{{ formatCurrency(client.accounts[0]?.marketValue) }}</span>
+            </div>
+          </div>
+          <div class="client-action">
+            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Table Area -->
+    <main class="table-section">
+      <!-- Modern Table Toolbar -->
+      <div class="table-toolbar">
+        <div class="toolbar-left">
+          <div class="search-container">
+            <div class="search-input-wrapper">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input 
+                type="text"
+                class="search-input"
+                [value]="searchTerm()"
+                (input)="onSearchChange($any($event.target).value)"
+                placeholder="Search clients by name or account number"
+                aria-label="Search clients"
+              />
+              <button 
+                class="clear-button"
+                (click)="onSearchChange('')"
+                aria-label="Clear search"
+                *ngIf="searchTerm()"
+                type="button"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="toolbar-right">
+          <span class="results-count" *ngIf="filteredAndSortedClients().length > 0">
+            {{ filteredAndSortedClients().length }} results
+          </span>
+        </div>
+      </div>
+      
+      <div class="table-container" *ngIf="!loading(); else loadingTemplate">
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="filteredAndSortedClients()" class="clients-table">
+            <!-- Account ID Column -->
+            <ng-container matColumnDef="accountId">
+              <th mat-header-cell *matHeaderCellDef class="sortable-header" (click)="onSort({active: 'accountId', direction: sortDirection() === 'asc' ? 'desc' : 'asc'})">
+                Account ID
+                <svg class="sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18M3 12h18M3 18h18"/>
+                </svg>
+              </th>
+              <td mat-cell *matCellDef="let client">{{ client.accounts[0]?.accountId }}</td>
+            </ng-container>
+
+            <!-- Client Name Column -->
+            <ng-container matColumnDef="clientName">
+              <th mat-header-cell *matHeaderCellDef class="sortable-header" (click)="onSort({active: 'clientName', direction: sortDirection() === 'asc' ? 'desc' : 'asc'})">
+                Client Name
+                <svg class="sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18M3 12h18M3 18h18"/>
+                </svg>
+              </th>
+              <td mat-cell *matCellDef="let client">{{ client.clientName }}</td>
+            </ng-container>
+
+            <!-- Market Value Column -->
+            <ng-container matColumnDef="marketValue">
+              <th mat-header-cell *matHeaderCellDef class="sortable-header" (click)="onSort({active: 'marketValue', direction: sortDirection() === 'asc' ? 'desc' : 'asc'})">
+                Market Value
+                <svg class="sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18M3 12h18M3 18h18"/>
+                </svg>
+              </th>
+              <td mat-cell *matCellDef="let client">{{ formatCurrency(client.accounts[0]?.marketValue) }}</td>
+            </ng-container>
+
+            <!-- YTD Performance Column -->
+            <ng-container matColumnDef="ytdPerformance">
+              <th mat-header-cell *matHeaderCellDef class="sortable-header" (click)="onSort({active: 'ytdPerformance', direction: sortDirection() === 'asc' ? 'desc' : 'asc'})">
+                YTD Performance
+                <svg class="sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18M3 12h18M3 18h18"/>
+                </svg>
+              </th>
+              <td mat-cell *matCellDef="let client">
+                <span [class]="client.accounts[0]?.ytdPerformance >= 0 ? 'positive-performance' : 'negative-performance'">
+                  {{ formatPercentage(client.accounts[0]?.ytdPerformance) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let client">
+                <button mat-raised-button class="view-holdings-btn" (click)="viewHoldings(client.clientId, client.accounts[0]?.accountId)">
+                  View Holdings
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="data-row"></tr>
+          </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="filteredAndSortedClients().length === 0 && !loading()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <h3>No clients found</h3>
+          <p>Try adjusting your search criteria</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Loading Template -->
+<ng-template #loadingTemplate>
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
+  </div>
+</ng-template>
