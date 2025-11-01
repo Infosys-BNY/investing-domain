@@ -1,0 +1,151 @@
+.client-selection-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.search-section {
+  margin-bottom: 24px;
+}
+
+.search-field {
+  width: 100%;
+}
+
+.recent-clients-section {
+  margin-bottom: 32px;
+
+  h2 {
+    margin-bottom: 16px;
+    font-size: 20px;
+    font-weight: 500;
+    color: #003087;
+  }
+}
+
+.recent-clients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.recent-client-card {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+
+    h3 {
+      font-size: 16px;
+      font-weight: 500;
+      margin: 0;
+    }
+  }
+
+  .card-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+
+      .label {
+        color: #6C757D;
+      }
+
+      .value {
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+.clients-table-section {
+  h2 {
+    margin-bottom: 16px;
+    font-size: 20px;
+    font-weight: 500;
+    color: #003087;
+  }
+}
+
+.table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.mat-mdc-table {
+  width: 100%;
+
+  .mat-mdc-header-cell {
+    font-weight: 600;
+    color: #003087;
+  }
+
+  .mat-mdc-cell {
+    padding: 16px 8px;
+  }
+}
+
+.positive-performance {
+  color: #28a745;
+  font-weight: 500;
+}
+
+.negative-performance {
+  color: #dc3545;
+  font-weight: 500;
+}
+
+.view-holdings-btn {
+  background-color: #003087;
+  color: white;
+
+  &:hover {
+    background-color: #002460;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px;
+  color: #6C757D;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
