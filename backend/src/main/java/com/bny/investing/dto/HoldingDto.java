@@ -14,16 +14,19 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class HoldingDto {
     private String symbol;
-    private String cusip;
     private String securityName;
-    private AssetClass assetClass;
     private BigDecimal quantity;
     private BigDecimal currentPrice;
+    private BigDecimal priceChange;
+    private BigDecimal priceChangePercent;
     private BigDecimal costBasis;
+    private BigDecimal totalCost;
     private BigDecimal marketValue;
     private BigDecimal unrealizedGainLoss;
     private BigDecimal unrealizedGainLossPercent;
-    private BigDecimal ytdReturn;
-    private BigDecimal dayChange;
-    private BigDecimal dayChangePercent;
+    private BigDecimal portfolioPercent;
+    private String sector;
+    private AssetClass assetClass;
+    private boolean hasAlerts;
+    private int taxLotCount;
 }
