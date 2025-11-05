@@ -1,5 +1,6 @@
 package com.bny.investing.dto;
 
+import com.bny.shared.dto.response.PortfolioSummaryDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

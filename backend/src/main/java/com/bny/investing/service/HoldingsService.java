@@ -2,7 +2,7 @@ package com.bny.investing.service;
 
 import com.bny.investing.client.LfdClientService;
 import com.bny.investing.dto.HoldingsResponseDto;
-import com.bny.investing.dto.PortfolioSummaryDto;
+import com.bny.shared.dto.response.PortfolioSummaryDto;
 import com.bny.investing.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;

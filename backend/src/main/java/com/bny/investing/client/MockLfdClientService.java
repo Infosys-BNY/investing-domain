@@ -2,6 +2,7 @@ package com.bny.investing.client;
 
 import com.bny.investing.dto.*;
 import com.bny.investing.exception.ResourceNotFoundException;
+import com.bny.shared.dto.response.PortfolioSummaryDto;
 import com.bny.investing.model.AccountType;
 import com.bny.investing.model.AssetClass;
 import com.bny.investing.model.RiskProfile;

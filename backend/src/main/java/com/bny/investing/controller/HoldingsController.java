@@ -1,7 +1,7 @@
 package com.bny.investing.controller;
 
 import com.bny.investing.dto.HoldingsResponseDto;
-import com.bny.investing.dto.PortfolioSummaryDto;
+import com.bny.shared.dto.response.PortfolioSummaryDto;
 import com.bny.investing.service.HoldingsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
