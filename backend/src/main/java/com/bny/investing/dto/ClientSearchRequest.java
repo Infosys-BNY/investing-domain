@@ -31,12 +31,17 @@ public class ClientSearchRequest {
     private PerformanceFilter performanceFilter;
     private ActivityStatus activityStatus;
     
+    @Builder.Default
     @Min(value = 0, message = "Page must be 0 or greater")
     private int page = 0;
     
+    @Builder.Default
     @Min(value = 1, message = "Size must be at least 1")
     private int size = 50;
     
+    @Builder.Default
     private SortField sortBy = SortField.CLIENT_NAME;
+    
+    @Builder.Default
     private SortDirection sortDirection = SortDirection.ASC;
 }
