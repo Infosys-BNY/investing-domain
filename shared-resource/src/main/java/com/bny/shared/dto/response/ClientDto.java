@@ -27,5 +27,22 @@ public class ClientDto {
     @Size(max = 50, message = "Advisor ID must not exceed 50 characters")
     private String advisorId;
     
+    @Size(max = 200, message = "Advisor name must not exceed 200 characters")
+    private String advisorName;
+    
+    private Integer accountCount;
+    
+    private java.math.BigDecimal totalMarketValue;
+    
+    @Size(max = 50, message = "Activity status must not exceed 50 characters")
+    private String activityStatus;
+    
+    @Size(max = 50, message = "Risk profile must not exceed 50 characters")
+    private String riskProfile;
+    
+    private java.time.LocalDate lastActivityDate;
+    
+    private LocalDateTime createdDate;
+    
     private LocalDateTime lastAccessed;
 }

@@ -1,11 +1,11 @@
 package com.bny.lfdapi.service;
 
-import com.bny.lfdapi.dto.request.ClientSearchRequest;
+import com.bny.shared.dto.request.ClientSearchRequest;
 import com.bny.lfdapi.dto.response.AdvisorClientsResponse;
-import com.bny.lfdapi.dto.response.ClientDto;
+import com.bny.shared.dto.response.ClientDto;
 import com.bny.lfdapi.dto.response.ClientSearchResponse;
-import com.bny.lfdapi.dto.response.StoredProcedureResponse;
-import com.bny.lfdapi.exception.DatabaseOperationException;
+import com.bny.shared.dto.common.StoredProcedureResponse;
+import com.bny.shared.exception.DatabaseOperationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

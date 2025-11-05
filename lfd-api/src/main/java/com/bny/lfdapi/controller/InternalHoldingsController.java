@@ -1,6 +1,6 @@
 package com.bny.lfdapi.controller;
 
-import com.bny.lfdapi.dto.request.HoldingsRequest;
+import com.bny.shared.dto.request.HoldingsRequest;
 import com.bny.lfdapi.dto.response.HoldingsResponse;
 import com.bny.lfdapi.dto.response.PortfolioSummaryResponse;
 import com.bny.lfdapi.service.HoldingsDataService;

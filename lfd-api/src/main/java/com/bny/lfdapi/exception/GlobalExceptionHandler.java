@@ -1,6 +1,8 @@
 package com.bny.lfdapi.exception;
 
 import com.bny.lfdapi.dto.response.ErrorResponse;
+import com.bny.shared.exception.DatabaseOperationException;
+import com.bny.shared.exception.ValidationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

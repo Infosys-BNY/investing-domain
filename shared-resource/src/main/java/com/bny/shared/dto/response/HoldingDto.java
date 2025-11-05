@@ -1,6 +1,5 @@
 package com.bny.shared.dto.response;
 
-import com.bny.shared.enums.AssetClass;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,12 +9,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class HoldingDto {
+    
+    @Size(max = 50, message = "Account ID must not exceed 50 characters")
+    private String accountId;
     
     @NotBlank(message = "Symbol is required")
     @Size(max = 20, message = "Symbol must not exceed 20 characters")
@@ -37,5 +40,10 @@ public class HoldingDto {
     @Size(max = 100, message = "Sector must not exceed 100 characters")
     private String sector;
     
-    private AssetClass assetClass;
+    @Size(max = 50, message = "Asset class must not exceed 50 characters")
+    private String assetClass;
+    
+    private LocalDate purchaseDate;
+    
+    private LocalDate priceDate;
 }

@@ -3,7 +3,6 @@ package com.bny.shared.service;
 import com.bny.shared.dto.response.ClientDto;
 import com.bny.shared.dto.response.HoldingDto;
 import com.bny.shared.dto.response.PortfolioSummaryDto;
-import com.bny.shared.enums.AssetClass;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -48,7 +47,7 @@ public class ResultSetMapper {
                 .unrealizedGainLossPercent(getBigDecimal(rs, "unrealized_gain_loss_percent"))
                 .portfolioPercent(getBigDecimal(rs, "portfolio_percent"))
                 .sector(rs.getString("sector"))
-                .assetClass(getAssetClass(rs, "asset_class"))
+                .assetClass(rs.getString("asset_class"))
                 .build();
             
             holdings.add(holding);
@@ -87,10 +86,5 @@ public class ResultSetMapper {
     private LocalDateTime getLocalDateTime(ResultSet rs, String columnName) throws SQLException {
         java.sql.Timestamp timestamp = rs.getTimestamp(columnName);
         return timestamp != null ? timestamp.toLocalDateTime() : null;
-    }
-    
-    private AssetClass getAssetClass(ResultSet rs, String columnName) throws SQLException {
-        String value = rs.getString(columnName);
-        return value != null ? AssetClass.valueOf(value) : null;
     }
 }

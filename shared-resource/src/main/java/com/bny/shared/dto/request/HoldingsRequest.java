@@ -21,5 +21,17 @@ public class HoldingsRequest {
     @Size(max = 20, message = "Symbol must not exceed 20 characters")
     private String symbol;
     
+    private String asOfDate;
+    
+    private java.util.List<String> assetClasses;
+    
+    private String sortField;
+    
+    private String sortDirection;
+    
+    private int pageOffset = 0;
+    
+    private int pageSize = 50;
+    
     private boolean includeTaxLots = false;
 }

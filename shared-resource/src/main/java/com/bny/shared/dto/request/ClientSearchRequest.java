@@ -22,6 +22,20 @@ public class ClientSearchRequest {
     @Size(max = 200, message = "Search query must not exceed 200 characters")
     private String searchQuery;
     
+    private java.util.List<String> accountTypes;
+    
+    private java.math.BigDecimal minMarketValue;
+    
+    private java.math.BigDecimal maxMarketValue;
+    
+    private String activityStatus;
+    
+    private String riskProfile;
+    
+    private String sortField;
+    
+    private String sortDirection;
+    
     @Min(value = 0, message = "Page offset must be 0 or greater")
     private int pageOffset = 0;
     
