@@ -2,8 +2,8 @@ package com.bny.lfdapi.service;
 
 import com.bny.shared.dto.request.ClientSearchRequest;
 import com.bny.lfdapi.dto.response.AdvisorClientsResponse;
-import com.bny.shared.dto.response.ClientDto;
 import com.bny.lfdapi.dto.response.ClientSearchResponse;
+import com.bny.shared.dto.response.ClientDto;
 import com.bny.shared.dto.common.StoredProcedureResponse;
 import com.bny.shared.exception.DatabaseOperationException;
 import com.fasterxml.jackson.databind.ObjectMapper;

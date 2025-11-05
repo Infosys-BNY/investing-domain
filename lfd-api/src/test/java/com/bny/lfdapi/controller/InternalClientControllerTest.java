@@ -1,8 +1,8 @@
 package com.bny.lfdapi.controller;
 
-import com.bny.lfdapi.dto.request.ClientSearchRequest;
+import com.bny.shared.dto.request.ClientSearchRequest;
 import com.bny.lfdapi.dto.response.AdvisorClientsResponse;
-import com.bny.lfdapi.dto.response.ClientDto;
+import com.bny.shared.dto.response.ClientDto;
 import com.bny.lfdapi.dto.response.ClientSearchResponse;
 import com.bny.lfdapi.service.ClientDataService;
 import org.junit.jupiter.api.BeforeEach;
