@@ -1,8 +1,12 @@
 package com.bny.lfdapi.service;
 
-import com.bny.lfdapi.dto.request.HoldingsRequest;
-import com.bny.lfdapi.dto.response.*;
-import com.bny.lfdapi.exception.DatabaseOperationException;
+import com.bny.shared.dto.request.HoldingsRequest;
+import com.bny.shared.dto.response.HoldingDto;
+import com.bny.shared.dto.common.StoredProcedureResponse;
+import com.bny.lfdapi.dto.response.HoldingsResponse;
+import com.bny.lfdapi.dto.response.PortfolioSummaryResponse;
+import com.bny.lfdapi.dto.response.AssetAllocationDto;
+import com.bny.shared.exception.DatabaseOperationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

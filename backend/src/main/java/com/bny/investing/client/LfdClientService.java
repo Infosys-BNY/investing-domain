@@ -3,7 +3,7 @@ package com.bny.investing.client;
 import com.bny.investing.dto.AccountDto;
 import com.bny.investing.dto.ClientDto;
 import com.bny.investing.dto.HoldingsResponseDto;
-import com.bny.investing.dto.PortfolioSummaryDto;
+import com.bny.shared.dto.response.PortfolioSummaryDto;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

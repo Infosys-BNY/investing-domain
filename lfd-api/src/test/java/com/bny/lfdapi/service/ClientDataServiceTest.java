@@ -1,9 +1,9 @@
 package com.bny.lfdapi.service;
 
-import com.bny.lfdapi.dto.request.ClientSearchRequest;
+import com.bny.shared.dto.request.ClientSearchRequest;
 import com.bny.lfdapi.dto.response.AdvisorClientsResponse;
 import com.bny.lfdapi.dto.response.ClientSearchResponse;
-import com.bny.lfdapi.dto.response.StoredProcedureResponse;
+import com.bny.shared.dto.common.StoredProcedureResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

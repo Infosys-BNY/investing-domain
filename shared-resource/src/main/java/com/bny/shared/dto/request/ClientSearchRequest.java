@@ -1,15 +1,13 @@
-package com.bny.lfdapi.dto.request;
+package com.bny.shared.dto.request;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.util.List;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Data
 @Builder
@@ -18,15 +16,17 @@ import java.util.List;
 public class ClientSearchRequest {
     
     @NotBlank(message = "Advisor ID is required")
+    @Size(max = 50, message = "Advisor ID must not exceed 50 characters")
     private String advisorId;
     
+    @Size(max = 200, message = "Search query must not exceed 200 characters")
     private String searchQuery;
     
-    private List<String> accountTypes;
+    private java.util.List<String> accountTypes;
     
-    private BigDecimal minMarketValue;
+    private java.math.BigDecimal minMarketValue;
     
-    private BigDecimal maxMarketValue;
+    private java.math.BigDecimal maxMarketValue;
     
     private String activityStatus;
     
@@ -37,11 +37,8 @@ public class ClientSearchRequest {
     private String sortDirection;
     
     @Min(value = 0, message = "Page offset must be 0 or greater")
-    @Builder.Default
-    private Integer pageOffset = 0;
+    private int pageOffset = 0;
     
     @Min(value = 1, message = "Page size must be at least 1")
-    @Max(value = 100, message = "Page size cannot exceed 100")
-    @Builder.Default
-    private Integer pageSize = 50;
+    private int pageSize = 50;
 }

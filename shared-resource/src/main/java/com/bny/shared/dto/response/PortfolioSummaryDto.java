@@ -1,4 +1,4 @@
-package com.bny.investing.dto;
+package com.bny.shared.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ public class PortfolioSummaryDto {
     private BigDecimal totalCostBasis;
     private BigDecimal totalUnrealizedGainLoss;
     private BigDecimal totalRealizedGainLossYTD;
-    private int numberOfHoldings;
+    private Integer numberOfHoldings;
     private BigDecimal portfolioBeta;
     private BigDecimal dividendYield;
     private LocalDateTime asOfDate;

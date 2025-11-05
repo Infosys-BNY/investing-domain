@@ -1,0 +1,36 @@
+bny:
+  database:
+    primary:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 20000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+    read-only:
+      maximum-pool-size: 15
+      minimum-idle: 3
+      connection-timeout: 20000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+    query-timeout: 30
+    enable-metrics: true
+    enable-caching: true
+    cache-timeout-seconds: 300
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: false
+        show_sql: false
+    open-in-view: false
+
+logging:
+  level:
+    com.bny.shared: INFO
+    org.springframework.jdbc: WARN
+    com.zaxxer.hikari: WARN

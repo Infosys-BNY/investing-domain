@@ -1,5 +1,6 @@
 package com.bny.lfdapi.dto.response;
 
+import com.bny.shared.dto.response.HoldingDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
