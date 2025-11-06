@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: lfd-api-layer-test
+  datasource:
+    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/bny_data_services}
+    username: ${DATABASE_USERNAME:admin}
+    password: ${DATABASE_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+
+logging:
+  level:
+    com.bny.lfdapi: DEBUG
+    com.bny.shared: DEBUG
+    org.springframework.jdbc: DEBUG
+
+server:
+  port: 8081
