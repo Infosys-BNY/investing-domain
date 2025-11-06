@@ -61,6 +61,26 @@ public class DataSourceConfig {
         return new HikariDataSource(config);
     }
 
+    @Bean(name = "readOnlyDataSource")
+    public DataSource readOnlyDataSource() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(url);
+        config.setUsername(username);
+        config.setPassword(password);
+        config.setMaximumPoolSize(maximumPoolSize / 2);
+        config.setMinimumIdle(minimumIdle / 2);
+        config.setConnectionTimeout(connectionTimeout);
+        config.setIdleTimeout(idleTimeout);
+        config.setMaxLifetime(maxLifetime);
+        config.setLeakDetectionThreshold(leakDetectionThreshold);
+        config.setPoolName("LFD-ReadOnly-Pool");
+        config.setReadOnly(true);
+        config.setConnectionTestQuery("SELECT 1");
+        config.setValidationTimeout(3000);
+        
+        return new HikariDataSource(config);
+    }
+
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);

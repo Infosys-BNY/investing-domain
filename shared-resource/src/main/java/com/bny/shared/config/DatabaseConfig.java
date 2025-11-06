@@ -27,8 +27,8 @@ public class DatabaseConfig {
     @ConditionalOnMissingBean(name = "primaryDataSource")
     public DataSource primaryDataSource() {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(System.getenv().getOrDefault("DATABASE_URL", "jdbc:mysql://localhost:3306/investing"));
-        config.setUsername(System.getenv().getOrDefault("DATABASE_USERNAME", "root"));
+        config.setJdbcUrl(System.getenv().getOrDefault("DATABASE_URL", "jdbc:mysql://bny-demo.c3uyq60ukgb6.us-east-2.rds.amazonaws.com:3306/bny_data_services"));
+        config.setUsername(System.getenv().getOrDefault("DATABASE_USERNAME", "admin"));
         config.setPassword(System.getenv().getOrDefault("DATABASE_PASSWORD", "password"));
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
         
@@ -53,8 +53,8 @@ public class DatabaseConfig {
     public DataSource readOnlyDataSource() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(System.getenv().getOrDefault("DATABASE_READONLY_URL", 
-            System.getenv().getOrDefault("DATABASE_URL", "jdbc:mysql://localhost:3306/investing")));
-        config.setUsername(System.getenv().getOrDefault("DATABASE_USERNAME", "root"));
+            System.getenv().getOrDefault("DATABASE_URL", "jdbc:mysql://bny-demo.c3uyq60ukgb6.us-east-2.rds.amazonaws.com:3306/bny_data_services")));
+        config.setUsername(System.getenv().getOrDefault("DATABASE_USERNAME", "admin"));
         config.setPassword(System.getenv().getOrDefault("DATABASE_PASSWORD", "password"));
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
         

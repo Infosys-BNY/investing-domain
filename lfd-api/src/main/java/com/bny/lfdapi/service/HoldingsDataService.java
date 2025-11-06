@@ -142,7 +142,7 @@ public class HoldingsDataService {
             .totalUnrealizedGainLossPercent((BigDecimal) outputParams.get("p_unrealized_gain_loss_percent"))
             .portfolioBeta((BigDecimal) outputParams.get("p_portfolio_beta"))
             .annualDividendYield((BigDecimal) outputParams.get("p_annual_dividend_yield"))
-            .holdingsCount((Integer) outputParams.get("p_holdings_count"))
+            .holdingsCount(convertToInteger(outputParams.get("p_holdings_count")))
             .assetAllocation(assetAllocation)
             .resultCode(response.getResultCode())
             .errorMessage(response.getErrorMessage())
@@ -165,7 +165,7 @@ public class HoldingsDataService {
                         .assetClass((String) row.get("asset_class"))
                         .marketValue((BigDecimal) row.get("market_value"))
                         .percentage((BigDecimal) row.get("percentage"))
-                        .holdingsCount((Integer) row.get("holdings_count"))
+                        .holdingsCount(convertToInteger(row.get("holdings_count")))
                         .build();
                     allocations.add(allocation);
                 }
@@ -181,11 +181,23 @@ public class HoldingsDataService {
     private Integer extractTotalCount(StoredProcedureResponse response) {
         if (response.getOutputParameters() != null) {
             Object totalCount = response.getOutputParameters().get("p_total_count");
-            if (totalCount instanceof Integer) {
-                return (Integer) totalCount;
-            }
+            return convertToInteger(totalCount);
         }
         return 0;
+    }
+    
+    private Integer convertToInteger(Object value) {
+        if (value == null) return null;
+        if (value instanceof Integer) {
+            return (Integer) value;
+        }
+        if (value instanceof Long) {
+            return ((Long) value).intValue();
+        }
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        return null;
     }
 
     private String convertToJson(List<String> list) {

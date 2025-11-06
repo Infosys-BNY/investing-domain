@@ -37,6 +37,6 @@ management:
 logging:
   level:
     com.bny.lfdapi: DEBUG
-bny-demo.c3uyq60ukgb6.us-east-2.rds.amazonaws.com    org.springframework.jdbc: DEBUG
+    org.springframework.jdbc: DEBUG
   pattern:
     console: "[%d{yyyy-MM-dd HH:mm:ss}] [%thread] %-5level %logger{36} - %msg%n"

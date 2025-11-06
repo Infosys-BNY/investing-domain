@@ -123,7 +123,7 @@ public class ClientDataService {
             .clientName((String) row.get("client_name"))
             .advisorId((String) row.get("advisor_id"))
             .advisorName((String) row.get("advisor_name"))
-            .accountCount((Integer) row.get("account_count"))
+            .accountCount(convertToInteger(row.get("account_count")))
             .totalMarketValue((java.math.BigDecimal) row.get("total_market_value"))
             .activityStatus((String) row.get("activity_status"))
             .riskProfile((String) row.get("risk_profile"))
@@ -135,11 +135,23 @@ public class ClientDataService {
     private Integer extractTotalCount(StoredProcedureResponse response) {
         if (response.getOutputParameters() != null) {
             Object totalCount = response.getOutputParameters().get("p_total_count");
-            if (totalCount instanceof Integer) {
-                return (Integer) totalCount;
-            }
+            return convertToInteger(totalCount);
         }
         return 0;
+    }
+    
+    private Integer convertToInteger(Object value) {
+        if (value == null) return null;
+        if (value instanceof Integer) {
+            return (Integer) value;
+        }
+        if (value instanceof Long) {
+            return ((Long) value).intValue();
+        }
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        return null;
     }
 
     private String convertToJson(List<String> list) {
