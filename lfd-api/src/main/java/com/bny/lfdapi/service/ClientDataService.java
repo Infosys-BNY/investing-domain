@@ -4,8 +4,10 @@ import com.bny.shared.dto.request.ClientSearchRequest;
 import com.bny.lfdapi.dto.response.AdvisorClientsResponse;
 import com.bny.lfdapi.dto.response.ClientSearchResponse;
 import com.bny.shared.dto.response.ClientDto;
+import com.bny.shared.dto.common.StoredProcedureRequest;
 import com.bny.shared.dto.common.StoredProcedureResponse;
 import com.bny.shared.exception.DatabaseOperationException;
+import com.bny.shared.service.StoredProcedureExecutor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +44,12 @@ public class ClientDataService {
         parameters.put("p_page_offset", request.getPageOffset());
         parameters.put("p_page_size", request.getPageSize());
         
-        StoredProcedureResponse spResponse = storedProcedureExecutor.executeReadProcedure(
-            "sp_search_clients", parameters);
+        StoredProcedureRequest spRequest = StoredProcedureRequest.builder()
+            .procedureName("sp_search_clients")
+            .parameters(parameters)
+            .build();
+        
+        StoredProcedureResponse spResponse = storedProcedureExecutor.execute(spRequest);
         
         List<ClientDto> clients = extractClientsFromResponse(spResponse);
         Integer totalCount = extractTotalCount(spResponse);
@@ -67,8 +73,12 @@ public class ClientDataService {
         parameters.put("p_page_offset", pageOffset);
         parameters.put("p_page_size", pageSize);
         
-        StoredProcedureResponse spResponse = storedProcedureExecutor.executeReadProcedure(
-            "sp_get_advisor_clients", parameters);
+        StoredProcedureRequest spRequest = StoredProcedureRequest.builder()
+            .procedureName("sp_get_advisor_clients")
+            .parameters(parameters)
+            .build();
+        
+        StoredProcedureResponse spResponse = storedProcedureExecutor.execute(spRequest);
         
         List<ClientDto> clients = extractClientsFromResponse(spResponse);
         Integer totalCount = extractTotalCount(spResponse);

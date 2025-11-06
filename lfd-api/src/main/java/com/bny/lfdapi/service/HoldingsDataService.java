@@ -2,11 +2,13 @@ package com.bny.lfdapi.service;
 
 import com.bny.shared.dto.request.HoldingsRequest;
 import com.bny.shared.dto.response.HoldingDto;
+import com.bny.shared.dto.common.StoredProcedureRequest;
 import com.bny.shared.dto.common.StoredProcedureResponse;
 import com.bny.lfdapi.dto.response.HoldingsResponse;
 import com.bny.lfdapi.dto.response.PortfolioSummaryResponse;
 import com.bny.lfdapi.dto.response.AssetAllocationDto;
 import com.bny.shared.exception.DatabaseOperationException;
+import com.bny.shared.service.StoredProcedureExecutor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +43,12 @@ public class HoldingsDataService {
         parameters.put("p_page_offset", request.getPageOffset());
         parameters.put("p_page_size", request.getPageSize());
         
-        StoredProcedureResponse spResponse = storedProcedureExecutor.executeReadProcedure(
-            "sp_get_account_holdings", parameters);
+        StoredProcedureRequest spRequest = StoredProcedureRequest.builder()
+            .procedureName("sp_get_account_holdings")
+            .parameters(parameters)
+            .build();
+        
+        StoredProcedureResponse spResponse = storedProcedureExecutor.execute(spRequest);
         
         List<HoldingDto> holdings = extractHoldingsFromResponse(spResponse);
         Integer totalCount = extractTotalCount(spResponse);
@@ -63,8 +69,12 @@ public class HoldingsDataService {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("p_account_id", accountId);
         
-        StoredProcedureResponse spResponse = storedProcedureExecutor.executeReadProcedure(
-            "sp_get_portfolio_summary", parameters);
+        StoredProcedureRequest spRequest = StoredProcedureRequest.builder()
+            .procedureName("sp_get_portfolio_summary")
+            .parameters(parameters)
+            .build();
+        
+        StoredProcedureResponse spResponse = storedProcedureExecutor.execute(spRequest);
         
         return extractPortfolioSummaryFromResponse(accountId, spResponse);
     }

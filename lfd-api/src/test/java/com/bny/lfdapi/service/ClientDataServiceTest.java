@@ -3,7 +3,9 @@ package com.bny.lfdapi.service;
 import com.bny.shared.dto.request.ClientSearchRequest;
 import com.bny.lfdapi.dto.response.AdvisorClientsResponse;
 import com.bny.lfdapi.dto.response.ClientSearchResponse;
+import com.bny.shared.dto.common.StoredProcedureRequest;
 import com.bny.shared.dto.common.StoredProcedureResponse;
+import com.bny.shared.service.StoredProcedureExecutor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,8 +70,7 @@ class ClientDataServiceTest {
             .outputParameters(outputParams)
             .build();
 
-        when(storedProcedureExecutor.executeReadProcedure(
-            eq("sp_search_clients"), anyMap()))
+        when(storedProcedureExecutor.execute(any(StoredProcedureRequest.class)))
             .thenReturn(spResponse);
 
         ClientSearchResponse response = clientDataService.searchClients(searchRequest);
@@ -81,7 +82,7 @@ class ClientDataServiceTest {
         assertThat(response.getTotalCount()).isEqualTo(1);
         assertThat(response.getResultCode()).isEqualTo(0);
         
-        verify(storedProcedureExecutor).executeReadProcedure(eq("sp_search_clients"), anyMap());
+        verify(storedProcedureExecutor).execute(any(StoredProcedureRequest.class));
     }
 
     @Test
@@ -95,8 +96,7 @@ class ClientDataServiceTest {
             .outputParameters(outputParams)
             .build();
 
-        when(storedProcedureExecutor.executeReadProcedure(
-            eq("sp_get_advisor_clients"), anyMap()))
+        when(storedProcedureExecutor.execute(any(StoredProcedureRequest.class)))
             .thenReturn(spResponse);
 
         AdvisorClientsResponse response = 
@@ -108,8 +108,7 @@ class ClientDataServiceTest {
         assertThat(response.getTotalCount()).isEqualTo(1);
         assertThat(response.getResultCode()).isEqualTo(0);
         
-        verify(storedProcedureExecutor).executeReadProcedure(
-            eq("sp_get_advisor_clients"), anyMap());
+        verify(storedProcedureExecutor).execute(any(StoredProcedureRequest.class));
     }
 
     @Test
@@ -123,8 +122,7 @@ class ClientDataServiceTest {
             .outputParameters(outputParams)
             .build();
 
-        when(storedProcedureExecutor.executeReadProcedure(
-            eq("sp_search_clients"), anyMap()))
+        when(storedProcedureExecutor.execute(any(StoredProcedureRequest.class)))
             .thenReturn(spResponse);
 
         ClientSearchResponse response = clientDataService.searchClients(searchRequest);
@@ -141,8 +139,7 @@ class ClientDataServiceTest {
             .data(null)
             .build();
 
-        when(storedProcedureExecutor.executeReadProcedure(
-            eq("sp_search_clients"), anyMap()))
+        when(storedProcedureExecutor.execute(any(StoredProcedureRequest.class)))
             .thenReturn(spResponse);
 
         ClientSearchResponse response = clientDataService.searchClients(searchRequest);

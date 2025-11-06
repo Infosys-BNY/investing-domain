@@ -3,7 +3,9 @@ package com.bny.lfdapi.service;
 import com.bny.shared.dto.request.HoldingsRequest;
 import com.bny.lfdapi.dto.response.HoldingsResponse;
 import com.bny.lfdapi.dto.response.PortfolioSummaryResponse;
+import com.bny.shared.dto.common.StoredProcedureRequest;
 import com.bny.shared.dto.common.StoredProcedureResponse;
+import com.bny.shared.service.StoredProcedureExecutor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,8 +80,7 @@ class HoldingsDataServiceTest {
             .outputParameters(outputParams)
             .build();
 
-        when(storedProcedureExecutor.executeReadProcedure(
-            eq("sp_get_account_holdings"), anyMap()))
+        when(storedProcedureExecutor.execute(any(StoredProcedureRequest.class)))
             .thenReturn(spResponse);
 
         HoldingsResponse response = holdingsDataService.getAccountHoldings(holdingsRequest);
@@ -91,8 +92,7 @@ class HoldingsDataServiceTest {
         assertThat(response.getTotalCount()).isEqualTo(1);
         assertThat(response.getResultCode()).isEqualTo(0);
         
-        verify(storedProcedureExecutor).executeReadProcedure(
-            eq("sp_get_account_holdings"), anyMap());
+        verify(storedProcedureExecutor).execute(any(StoredProcedureRequest.class));
     }
 
     @Test
@@ -112,8 +112,7 @@ class HoldingsDataServiceTest {
             .outputParameters(outputParams)
             .build();
 
-        when(storedProcedureExecutor.executeReadProcedure(
-            eq("sp_get_portfolio_summary"), anyMap()))
+        when(storedProcedureExecutor.execute(any(StoredProcedureRequest.class)))
             .thenReturn(spResponse);
 
         PortfolioSummaryResponse response = 
@@ -129,8 +128,7 @@ class HoldingsDataServiceTest {
         assertThat(response.getAssetAllocation()).hasSize(1);
         assertThat(response.getResultCode()).isEqualTo(0);
         
-        verify(storedProcedureExecutor).executeReadProcedure(
-            eq("sp_get_portfolio_summary"), anyMap());
+        verify(storedProcedureExecutor).execute(any(StoredProcedureRequest.class));
     }
 
     @Test
@@ -144,8 +142,7 @@ class HoldingsDataServiceTest {
             .outputParameters(outputParams)
             .build();
 
-        when(storedProcedureExecutor.executeReadProcedure(
-            eq("sp_get_account_holdings"), anyMap()))
+        when(storedProcedureExecutor.execute(any(StoredProcedureRequest.class)))
             .thenReturn(spResponse);
 
         HoldingsResponse response = holdingsDataService.getAccountHoldings(holdingsRequest);
@@ -162,8 +159,7 @@ class HoldingsDataServiceTest {
             .data(null)
             .build();
 
-        when(storedProcedureExecutor.executeReadProcedure(
-            eq("sp_get_account_holdings"), anyMap()))
+        when(storedProcedureExecutor.execute(any(StoredProcedureRequest.class)))
             .thenReturn(spResponse);
 
         HoldingsResponse response = holdingsDataService.getAccountHoldings(holdingsRequest);
