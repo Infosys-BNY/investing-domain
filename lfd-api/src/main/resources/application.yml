@@ -2,16 +2,16 @@ spring:
   application:
     name: lfd-api-layer
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
-  
+    active: dev
+
   datasource:
-    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/investing}
-    username: ${DATABASE_USERNAME:root}
-    password: ${DATABASE_PASSWORD:password}
+    url: jdbc:mysql://bny-demo.c3uyq60ukgb6.us-east-2.rds.amazonaws.com:3306/bny_data_services
+    username: admin
+    password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      maximum-pool-size: ${DB_POOL_SIZE:50}
-      minimum-idle: ${DB_POOL_MIN_IDLE:10}
+      maximum-pool-size: 50
+      minimum-idle: 10
       idle-timeout: 300000
       max-lifetime: 1800000
       connection-timeout: 20000
@@ -21,7 +21,7 @@ spring:
       validation-timeout: 3000
 
 server:
-  port: ${SERVER_PORT:8081}
+  port: 8081
   servlet:
     context-path: /
 
@@ -36,7 +36,7 @@ management:
 
 logging:
   level:
-    com.bny.lfdapi: ${LOG_LEVEL:DEBUG}
-    org.springframework.jdbc: DEBUG
+    com.bny.lfdapi: DEBUG
+bny-demo.c3uyq60ukgb6.us-east-2.rds.amazonaws.com    org.springframework.jdbc: DEBUG
   pattern:
     console: "[%d{yyyy-MM-dd HH:mm:ss}] [%thread] %-5level %logger{36} - %msg%n"

@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/investing_dev
-    username: ${DATABASE_USERNAME:root}
-    password: ${DATABASE_PASSWORD:password}
+    url: jdbc:mysql://bny-demo.c3uyq60ukgb6.us-east-2.rds.amazonaws.com:3306/bny_data_services
+    username: admin
+    password: password
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
