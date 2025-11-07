@@ -1,8 +1,10 @@
 package com.bny.lfdapi.controller;
 
 import com.bny.shared.dto.request.HoldingsRequest;
+import com.bny.shared.dto.response.AccountDto;
 import com.bny.lfdapi.dto.response.HoldingsResponse;
 import com.bny.lfdapi.dto.response.PortfolioSummaryResponse;
+import com.bny.lfdapi.service.AccountDataService;
 import com.bny.lfdapi.service.HoldingsDataService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,9 @@ public class InternalHoldingsController {
 
     @Autowired
     private HoldingsDataService holdingsDataService;
+    
+    @Autowired
+    private AccountDataService accountDataService;
 
     @PostMapping("/{accountId}/holdings")
     public ResponseEntity<HoldingsResponse> getAccountHoldings(
@@ -53,5 +58,16 @@ public class InternalHoldingsController {
         }
         
         return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/{accountId}")
+    public ResponseEntity<AccountDto> getAccountInfo(
+            @PathVariable String accountId) {
+        
+        log.info("Get account info request received for account: {}", accountId);
+        
+        AccountDto account = accountDataService.getAccountById(accountId);
+        
+        return ResponseEntity.ok(account);
     }
 }

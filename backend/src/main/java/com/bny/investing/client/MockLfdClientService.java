@@ -276,12 +276,15 @@ public class MockLfdClientService implements LfdClientService {
         return holdings;
     }
     
-    private AccountDto getAccountInfo(String accountId) {
+    @Override
+    public AccountDto getAccountInfo(String accountId) {
         return AccountDto.builder()
                 .accountId(accountId)
                 .accountNumber("12345678")
                 .accountType(AccountType.INDIVIDUAL)
                 .accountName("Personal Investment Account")
+                .clientId("CLT001")
+                .clientName("Smith, John")
                 .marketValue(BigDecimal.valueOf(250000))
                 .costBasis(BigDecimal.valueOf(218800))
                 .unrealizedGainLoss(BigDecimal.valueOf(31200))

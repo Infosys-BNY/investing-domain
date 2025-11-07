@@ -86,6 +86,36 @@ public class RestLfdClientService implements LfdClientService {
     }
     
     @Override
+    public AccountDto getAccountInfo(String accountId) {
+        String url = lfdApiBaseUrl + "/internal/accounts/" + accountId;
+        
+        HttpHeaders headers = createHeaders("advisor-id-placeholder");
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        
+        log.debug("Calling LFD API: GET {}", url);
+        
+        try {
+            ResponseEntity<com.bny.shared.dto.response.AccountDto> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                com.bny.shared.dto.response.AccountDto.class
+            );
+            
+            log.info("Received account info from LFD API for account: {}", accountId);
+            
+            return transformToBackendAccountDto(response.getBody());
+        } catch (HttpClientErrorException e) {
+            log.error("Error calling LFD API for account info: {} - {}", 
+                e.getStatusCode(), e.getMessage());
+            throw new ResourceNotFoundException("Account not found: " + accountId);
+        } catch (Exception e) {
+            log.error("Unexpected error calling LFD API for account info", e);
+            throw new ResourceNotFoundException("Account not found: " + accountId);
+        }
+    }
+    
+    @Override
     public HoldingsResponseDto getAccountHoldings(String accountId, Pageable pageable) {
         String url = lfdApiBaseUrl + "/internal/accounts/" + accountId + "/holdings";
         
@@ -196,6 +226,8 @@ public class RestLfdClientService implements LfdClientService {
             .accountId(sharedAccount.getAccountId())
             .accountNumber(sharedAccount.getAccountNumber())
             .accountType(parseAccountType(sharedAccount.getAccountType()))
+            .clientId(sharedAccount.getClientId())
+            .clientName(sharedAccount.getClientName())
             .marketValue(sharedAccount.getMarketValue())
             .cashBalance(sharedAccount.getCashBalance())
             .ytdPerformance(sharedAccount.getYtdPerformance())
@@ -251,9 +283,8 @@ public class RestLfdClientService implements LfdClientService {
                 .build();
         }
         
-        AccountDto accountInfo = AccountDto.builder()
-            .accountId(accountId)
-            .build();
+        AccountDto accountInfo = getAccountInfo(accountId);
+        PortfolioSummaryDto summary = getPortfolioSummary(accountId);
         
         List<HoldingDto> backendHoldings = transformToBackendHoldingDtos(lfdResponse.getHoldings());
         
@@ -264,6 +295,7 @@ public class RestLfdClientService implements LfdClientService {
         
         return HoldingsResponseDto.builder()
             .accountInfo(accountInfo)
+            .summary(summary)
             .holdings(backendHoldings)
             .page(pageable.getPageNumber())
             .size(pageable.getPageSize())

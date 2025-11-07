@@ -19,6 +19,8 @@ public class AccountDto {
     private String accountNumber;
     private AccountType accountType;
     private String accountName;
+    private String clientId;
+    private String clientName;
     private BigDecimal marketValue;
     private BigDecimal costBasis;
     private BigDecimal unrealizedGainLoss;
