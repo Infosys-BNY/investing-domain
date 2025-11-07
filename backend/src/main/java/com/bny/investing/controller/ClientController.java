@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
@@ -34,5 +37,13 @@ public class ClientController {
         
         PaginatedResponse<ClientDto> response = clientService.searchClients(request);
         return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/advisor/{advisorId}/recent-clients")
+    public ResponseEntity<List<ClientDto>> getRecentClients(
+            @PathVariable String advisorId,
+            @RequestParam(defaultValue = "5") int limit) {
+        
+        return ResponseEntity.ok(Collections.emptyList());
     }
 }

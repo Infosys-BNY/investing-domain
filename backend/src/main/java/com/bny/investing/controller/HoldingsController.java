@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/accounts")
 @Validated
@@ -40,5 +43,13 @@ public class HoldingsController {
         PortfolioSummaryDto response = holdingsService.getPortfolioSummary(accountId);
         
         return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/{accountId}/holdings/{symbol}/taxlots")
+    public ResponseEntity<List<?>> getTaxLots(
+            @PathVariable String accountId,
+            @PathVariable String symbol) {
+        
+        return ResponseEntity.ok(Collections.emptyList());
     }
 }
