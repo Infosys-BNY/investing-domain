@@ -345,6 +345,7 @@ public class RestLfdClientService implements LfdClientService {
             .totalMarketValue(lfdResponse.getTotalMarketValue())
             .totalCostBasis(lfdResponse.getTotalCostBasis())
             .totalUnrealizedGainLoss(lfdResponse.getTotalUnrealizedGainLoss())
+            .totalUnrealizedGainLossPercent(lfdResponse.getTotalUnrealizedGainLossPercent())
             .numberOfHoldings(lfdResponse.getHoldingsCount())
             .portfolioBeta(lfdResponse.getPortfolioBeta())
             .dividendYield(lfdResponse.getAnnualDividendYield())

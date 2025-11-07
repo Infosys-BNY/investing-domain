@@ -68,7 +68,7 @@ export class HoldingsViewComponent implements OnInit, OnDestroy {
     'symbol',
     'securityName',
     'quantity',
-    'price',
+    'currentPrice',
     'costBasis',
     'totalCost',
     'marketValue',
