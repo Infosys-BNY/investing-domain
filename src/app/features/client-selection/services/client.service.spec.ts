@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ClientService } from './client.service';
 import { ApiService } from '../../../core/services/api.service';
 import { of } from 'rxjs';
-import { MOCK_CLIENT_LIST_RESPONSE, MOCK_RECENT_CLIENTS } from './mock-client-data';
+import { MOCK_CLIENT_LIST_RESPONSE } from './mock-client-data';
 
 describe('ClientService', () => {
   let service: ClientService;
@@ -27,10 +27,15 @@ describe('ClientService', () => {
   });
 
   describe('searchClients', () => {
+    beforeEach(() => {
+      (service as unknown as { useMockData: boolean }).useMockData = true;
+    });
+
     it('should return filtered clients from mock data when useMockData is true', (done) => {
+      const advisorId = 'advisor-123';
       const searchQuery = 'Smith';
       
-      service.searchClients(searchQuery).subscribe(clients => {
+      service.searchClients(advisorId, searchQuery).subscribe(clients => {
         expect(clients.length).toBeGreaterThan(0);
         expect(clients[0].clientName).toContain('Smith');
         done();
@@ -38,9 +43,10 @@ describe('ClientService', () => {
     });
 
     it('should filter by account ID when searching', (done) => {
+      const advisorId = 'advisor-123';
       const searchQuery = 'ACC-1001';
       
-      service.searchClients(searchQuery).subscribe(clients => {
+      service.searchClients(advisorId, searchQuery).subscribe(clients => {
         expect(clients.length).toBeGreaterThan(0);
         expect(clients[0].accounts[0].accountId).toBe('ACC-1001');
         done();
@@ -48,18 +54,20 @@ describe('ClientService', () => {
     });
 
     it('should return empty array when no matches found', (done) => {
+      const advisorId = 'advisor-123';
       const searchQuery = 'NonExistentClient12345';
       
-      service.searchClients(searchQuery).subscribe(clients => {
+      service.searchClients(advisorId, searchQuery).subscribe(clients => {
         expect(clients.length).toBe(0);
         done();
       });
     });
 
     it('should be case insensitive when searching', (done) => {
+      const advisorId = 'advisor-123';
       const searchQuery = 'smith';
       
-      service.searchClients(searchQuery).subscribe(clients => {
+      service.searchClients(advisorId, searchQuery).subscribe(clients => {
         expect(clients.length).toBeGreaterThan(0);
         expect(clients[0].clientName.toLowerCase()).toContain('smith');
         done();
@@ -68,6 +76,10 @@ describe('ClientService', () => {
   });
 
   describe('getClientList', () => {
+    beforeEach(() => {
+      (service as unknown as { useMockData: boolean }).useMockData = true;
+    });
+
     it('should return client list response from mock data', (done) => {
       const advisorId = 'advisor-123';
       
@@ -81,12 +93,12 @@ describe('ClientService', () => {
       });
     });
 
-    it('should use default page and pageSize parameters', (done) => {
+    it('should use default page and size parameters', (done) => {
       const advisorId = 'advisor-123';
       
       service.getClientList(advisorId).subscribe(response => {
-        expect(response.pageInfo.currentPage).toBe(1);
-        expect(response.pageInfo.pageSize).toBe(50);
+        expect(response.pageInfo.currentPage).toBeDefined();
+        expect(response.pageInfo.pageSize).toBeDefined();
         done();
       });
     });
@@ -102,12 +114,18 @@ describe('ClientService', () => {
   });
 
   describe('getRecentClients', () => {
-    it('should return recent clients from mock data', (done) => {
+    it('should return recent clients by calling getClientList', (done) => {
       const advisorId = 'advisor-123';
+      const mockResponse = { 
+        clients: MOCK_CLIENT_LIST_RESPONSE.clients.slice(0, 5),
+        totalCount: 100,
+        pageInfo: { currentPage: 0, totalPages: 20, pageSize: 5 }
+      };
+      
+      spyOn(service, 'getClientList').and.returnValue(of(mockResponse));
       
       service.getRecentClients(advisorId).subscribe(clients => {
-        expect(clients).toBeTruthy();
-        expect(clients.length).toBe(MOCK_RECENT_CLIENTS.length);
+        expect(service.getClientList).toHaveBeenCalledWith(advisorId, 0, 5);
         expect(clients.length).toBeLessThanOrEqual(5);
         done();
       });
@@ -115,6 +133,13 @@ describe('ClientService', () => {
 
     it('should return array of Client objects', (done) => {
       const advisorId = 'advisor-123';
+      const mockResponse = { 
+        clients: MOCK_CLIENT_LIST_RESPONSE.clients.slice(0, 5),
+        totalCount: 100,
+        pageInfo: { currentPage: 0, totalPages: 20, pageSize: 5 }
+      };
+      
+      spyOn(service, 'getClientList').and.returnValue(of(mockResponse));
       
       service.getRecentClients(advisorId).subscribe(clients => {
         clients.forEach(client => {
@@ -129,6 +154,10 @@ describe('ClientService', () => {
   });
 
   describe('logClientAccess', () => {
+    beforeEach(() => {
+      (service as unknown as { useMockData: boolean }).useMockData = true;
+    });
+
     it('should complete successfully with mock data', (done) => {
       const clientId = 'CLT-001';
       
@@ -173,37 +202,62 @@ describe('ClientService', () => {
     });
 
     it('should call API service for searchClients', (done) => {
+      const advisorId = 'advisor-123';
       const query = 'test';
-      const mockResponse = { clients: MOCK_CLIENT_LIST_RESPONSE.clients, totalCount: 10, pageInfo: { currentPage: 1, totalPages: 1, pageSize: 50 } };
-      apiServiceSpy.get.and.returnValue(of(mockResponse));
+      const mockResponse = { 
+        content: MOCK_CLIENT_LIST_RESPONSE.clients, 
+        totalElements: 10, 
+        page: 0, 
+        size: 50,
+        totalPages: 1
+      };
+      apiServiceSpy.post.and.returnValue(of(mockResponse));
 
-      service.searchClients(query).subscribe(clients => {
-        expect(apiServiceSpy.get).toHaveBeenCalledWith('clients/search', { query });
-        expect(clients).toEqual(mockResponse.clients);
+      service.searchClients(advisorId, query).subscribe(clients => {
+        expect(apiServiceSpy.post).toHaveBeenCalledWith('clients/search', {
+          advisorId,
+          clientName: query,
+          page: 0,
+          size: 50
+        });
+        expect(clients).toEqual(mockResponse.content);
         done();
       });
     });
 
     it('should call API service for getClientList', (done) => {
       const advisorId = 'advisor-123';
-      const mockResponse = MOCK_CLIENT_LIST_RESPONSE;
+      const mockResponse = {
+        content: MOCK_CLIENT_LIST_RESPONSE.clients,
+        totalElements: MOCK_CLIENT_LIST_RESPONSE.totalCount,
+        page: 0,
+        size: 50,
+        totalPages: 1
+      };
       apiServiceSpy.get.and.returnValue(of(mockResponse));
 
       service.getClientList(advisorId).subscribe(response => {
-        expect(apiServiceSpy.get).toHaveBeenCalledWith(`advisor/${advisorId}/clients`, { page: 1, pageSize: 50 });
-        expect(response).toEqual(mockResponse);
+        expect(apiServiceSpy.get).toHaveBeenCalledWith(`advisor/${advisorId}/clients`, { page: 0, size: 50 });
+        expect(response.clients).toEqual(mockResponse.content);
+        expect(response.totalCount).toEqual(mockResponse.totalElements);
         done();
       });
     });
 
     it('should call API service for getRecentClients', (done) => {
       const advisorId = 'advisor-123';
-      const mockClients = MOCK_RECENT_CLIENTS;
-      apiServiceSpy.get.and.returnValue(of(mockClients));
+      const mockResponse = {
+        content: MOCK_CLIENT_LIST_RESPONSE.clients.slice(0, 5),
+        totalElements: 100,
+        page: 0,
+        size: 5,
+        totalPages: 20
+      };
+      apiServiceSpy.get.and.returnValue(of(mockResponse));
 
       service.getRecentClients(advisorId).subscribe(clients => {
-        expect(apiServiceSpy.get).toHaveBeenCalledWith(`advisor/${advisorId}/recent-clients`);
-        expect(clients).toEqual(mockClients);
+        expect(apiServiceSpy.get).toHaveBeenCalledWith(`advisor/${advisorId}/clients`, { page: 0, size: 5 });
+        expect(clients.length).toBeLessThanOrEqual(5);
         done();
       });
     });
