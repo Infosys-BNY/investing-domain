@@ -1,13 +1,23 @@
 import { TestBed } from '@angular/core/testing';
 import { HoldingsService } from './holdings.service';
 import { HoldingPeriod } from '../models';
+import { ApiService } from '../../../core/services/api.service';
 
 describe('HoldingsService', () => {
   let service: HoldingsService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    const spy = jasmine.createSpyObj('ApiService', ['get', 'post']);
+
+    TestBed.configureTestingModule({
+      providers: [
+        HoldingsService,
+        { provide: ApiService, useValue: spy }
+      ]
+    });
+
     service = TestBed.inject(HoldingsService);
+    (service as unknown as { useMockData: boolean }).useMockData = true;
   });
 
   it('should be created', () => {

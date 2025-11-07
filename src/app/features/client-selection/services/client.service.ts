@@ -7,7 +7,7 @@ import { MOCK_CLIENT_LIST_RESPONSE, MOCK_RECENT_CLIENTS } from './mock-client-da
 @Injectable()
 export class ClientService {
   private readonly api = inject(ApiService);
-  private readonly useMockData = true;
+  private readonly useMockData = false;
   
   searchClients(query: string): Observable<Client[]> {
     if (this.useMockData) {

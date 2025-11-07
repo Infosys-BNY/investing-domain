@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Observable, of, delay } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { Observable, of, delay, map } from 'rxjs';
 import { 
   Holding, 
   HoldingsResponse, 
@@ -9,18 +9,124 @@ import {
   AccountInfo,
   PortfolioSummary
 } from '../models';
+import { ApiService } from '../../../core/services/api.service';
+
+interface BackendHoldingDto {
+  symbol: string;
+  securityName: string;
+  quantity: number;
+  price: number;
+  priceChange?: number;
+  priceChangePercent?: number;
+  costBasis: number;
+  totalCost: number;
+  marketValue: number;
+  unrealizedGainLoss: number;
+  unrealizedGainLossPercent: number;
+  portfolioPercent: number;
+  sector: string;
+  assetClass: string;
+  hasAlerts?: boolean;
+  taxLotCount?: number;
+}
+
+interface BackendAccountDto {
+  accountId: string;
+  clientName: string;
+  accountType: string;
+  totalCashPosition?: number;
+  asOfDate?: string;
+}
+
+interface BackendPortfolioSummaryDto {
+  totalMarketValue: number;
+  totalCostBasis: number;
+  totalUnrealizedGainLoss: number;
+  totalUnrealizedGainLossPercent: number;
+  totalRealizedGainLossYTD?: number;
+  numberOfHoldings: number;
+  portfolioBeta?: number;
+  dividendYield?: number;
+}
+
+interface BackendHoldingsResponse {
+  accountInfo: BackendAccountDto;
+  summary: BackendPortfolioSummaryDto;
+  holdings: BackendHoldingDto[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class HoldingsService {
-  private useMockData = true;
+  private readonly api = inject(ApiService);
+  private useMockData = false;
 
   getHoldings(clientId: string, accountId: string): Observable<HoldingsResponse> {
     if (this.useMockData) {
       return of(this.createMockHoldingsResponse(clientId, accountId)).pipe(delay(500));
     }
-    return of(this.createMockHoldingsResponse(clientId, accountId));
+    return this.api.get<BackendHoldingsResponse>(`accounts/${accountId}/holdings`, { page: 0, size: 1000 }).pipe(
+      map(response => this.transformBackendResponse(response, clientId))
+    );
+  }
+
+  private transformBackendResponse(response: BackendHoldingsResponse, clientId: string): HoldingsResponse {
+    const accountInfo: AccountInfo = {
+      accountId: response.accountInfo?.accountId || '',
+      clientId: clientId,
+      clientName: response.accountInfo?.clientName || '',
+      accountType: response.accountInfo?.accountType || '',
+      totalPortfolioValue: response.summary?.totalMarketValue || 0,
+      totalCashPosition: response.accountInfo?.totalCashPosition || 0,
+      asOfDate: response.accountInfo?.asOfDate ? new Date(response.accountInfo.asOfDate) : new Date()
+    };
+
+    const summary: PortfolioSummary = {
+      totalMarketValue: response.summary?.totalMarketValue || 0,
+      totalCostBasis: response.summary?.totalCostBasis || 0,
+      totalUnrealizedGainLoss: response.summary?.totalUnrealizedGainLoss || 0,
+      totalUnrealizedGainLossPercent: response.summary?.totalUnrealizedGainLossPercent || 0,
+      totalRealizedGainLossYTD: response.summary?.totalRealizedGainLossYTD,
+      numberOfHoldings: response.summary?.numberOfHoldings || response.holdings?.length || 0,
+      portfolioBeta: response.summary?.portfolioBeta,
+      dividendYield: response.summary?.dividendYield
+    };
+
+    const holdings: Holding[] = (response.holdings || []).map((h: BackendHoldingDto) => ({
+      symbol: h.symbol,
+      securityName: h.securityName,
+      quantity: h.quantity,
+      price: h.price,
+      priceChange: h.priceChange,
+      priceChangePercent: h.priceChangePercent,
+      costBasis: h.costBasis,
+      totalCost: h.totalCost,
+      marketValue: h.marketValue,
+      unrealizedGainLoss: h.unrealizedGainLoss,
+      unrealizedGainLossPercent: h.unrealizedGainLossPercent,
+      portfolioPercent: h.portfolioPercent,
+      sector: h.sector,
+      assetClass: h.assetClass as AssetClass,
+      hasAlerts: h.hasAlerts,
+      taxLotCount: h.taxLotCount
+    }));
+
+    return {
+      accountInfo,
+      summary,
+      holdings,
+      pagination: response.totalElements !== undefined ? {
+        totalRecords: response.totalElements,
+        currentPage: response.page || 0,
+        pageSize: response.size || holdings.length,
+        totalPages: response.totalPages || 1
+      } : undefined
+    };
   }
 
   getTaxLots(accountId: string, symbol: string): Observable<TaxLot[]> {
@@ -348,7 +454,7 @@ export class HoldingsService {
           costBasis: 142.00,
           currentValue: 26775.00,
           gainLoss: 5475.00,
-          gainLossPercent: 25.71,
+          gainLossPercent: 25.70,
           holdingPeriod: HoldingPeriod.LONG_TERM,
           taxImpact: 821.25
         },

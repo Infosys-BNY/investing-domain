@@ -27,6 +27,10 @@ describe('ClientService', () => {
   });
 
   describe('searchClients', () => {
+    beforeEach(() => {
+      (service as unknown as { useMockData: boolean }).useMockData = true;
+    });
+
     it('should return filtered clients from mock data when useMockData is true', (done) => {
       const searchQuery = 'Smith';
       
@@ -68,6 +72,10 @@ describe('ClientService', () => {
   });
 
   describe('getClientList', () => {
+    beforeEach(() => {
+      (service as unknown as { useMockData: boolean }).useMockData = true;
+    });
+
     it('should return client list response from mock data', (done) => {
       const advisorId = 'advisor-123';
       
@@ -102,6 +110,10 @@ describe('ClientService', () => {
   });
 
   describe('getRecentClients', () => {
+    beforeEach(() => {
+      (service as unknown as { useMockData: boolean }).useMockData = true;
+    });
+
     it('should return recent clients from mock data', (done) => {
       const advisorId = 'advisor-123';
       
@@ -129,6 +141,10 @@ describe('ClientService', () => {
   });
 
   describe('logClientAccess', () => {
+    beforeEach(() => {
+      (service as unknown as { useMockData: boolean }).useMockData = true;
+    });
+
     it('should complete successfully with mock data', (done) => {
       const clientId = 'CLT-001';
       
