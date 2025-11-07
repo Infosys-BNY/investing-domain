@@ -2,7 +2,7 @@ export interface Holding {
   readonly symbol: string;
   securityName: string;
   quantity: number;
-  price: number;
+  currentPrice: number;
   priceChange?: number;
   priceChangePercent?: number;
   costBasis: number;
@@ -56,8 +56,8 @@ export interface AccountInfo {
   clientId: string;
   clientName: string;
   accountType: string;
-  totalPortfolioValue: number;
-  totalCashPosition?: number;
+  marketValue: number;
+  cashBalance?: number;
   asOfDate: Date;
 }
 

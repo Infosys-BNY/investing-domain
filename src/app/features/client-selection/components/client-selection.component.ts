@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatSelectModule } from '@angular/material/select';
 import { ClientService } from '../services/client.service';
 import { Client } from '../models';
 
@@ -26,7 +27,8 @@ import { Client } from '../models';
     MatIconModule,
     MatProgressSpinnerModule,
     MatCardModule,
-    MatSortModule
+    MatSortModule,
+    MatSelectModule
   ],
   templateUrl: './client-selection.component.html',
   styleUrl: './client-selection.component.scss',
@@ -43,6 +45,11 @@ export class ClientSelectionComponent implements OnInit {
   searchTerm = signal('');
   sortColumn = signal<string>('clientName');
   sortDirection = signal<'asc' | 'desc'>('asc');
+  advisorId = signal<string>('ADV001');
+  availableAdvisors = [
+    { id: 'ADV001', name: 'Advisor 001' },
+    { id: 'ADV002', name: 'Advisor 002' }
+  ];
 
   displayedColumns = ['accountId', 'clientName', 'marketValue', 'ytdPerformance', 'actions'];
 
@@ -101,10 +108,16 @@ export class ClientSelectionComponent implements OnInit {
     this.loadRecentClients();
   }
 
+  onAdvisorChange(advisorId: string): void {
+    this.advisorId.set(advisorId);
+    this.loadClients();
+    this.loadRecentClients();
+  }
+
   loadClients(): void {
     this.loading.set(true);
-    // Using ADV001 - the advisor ID from our test data
-    this.clientService.getClientList('ADV001').subscribe({
+    const currentAdvisorId = this.advisorId();
+    this.clientService.getClientList(currentAdvisorId).subscribe({
       next: (response) => {
         this.clients.set(response.clients);
         this.loading.set(false);
@@ -117,8 +130,8 @@ export class ClientSelectionComponent implements OnInit {
   }
 
   loadRecentClients(): void {
-    // Using ADV001 - the advisor ID from our test data
-    this.clientService.getRecentClients('ADV001').subscribe({
+    const currentAdvisorId = this.advisorId();
+    this.clientService.getRecentClients(currentAdvisorId).subscribe({
       next: (clients) => {
         this.recentClients.set(clients.slice(0, 5));
       },

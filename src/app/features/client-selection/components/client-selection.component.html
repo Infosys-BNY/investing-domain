@@ -4,7 +4,20 @@
     <div class="header-content">
       <div class="header-left">
         <h1 class="page-title">Client Selection</h1>
-        <span class="advisor-info">Advisor: advisor-123</span>
+        <div class="advisor-selector">
+          <label for="advisor-select" class="advisor-label">Advisor:</label>
+          <mat-form-field appearance="outline" class="advisor-dropdown">
+            <mat-select 
+              id="advisor-select"
+              [value]="advisorId()" 
+              (selectionChange)="onAdvisorChange($event.value)"
+              aria-label="Select advisor">
+              <mat-option *ngFor="let advisor of availableAdvisors" [value]="advisor.id">
+                {{ advisor.id }} - {{ advisor.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
       </div>
     </div>
   </header>

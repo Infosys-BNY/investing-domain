@@ -16,6 +16,7 @@ public class PortfolioSummaryDto {
     private BigDecimal totalMarketValue;
     private BigDecimal totalCostBasis;
     private BigDecimal totalUnrealizedGainLoss;
+    private BigDecimal totalUnrealizedGainLossPercent;
     private BigDecimal totalRealizedGainLossYTD;
     private Integer numberOfHoldings;
     private BigDecimal portfolioBeta;

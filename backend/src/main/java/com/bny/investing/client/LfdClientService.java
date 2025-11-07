@@ -12,6 +12,7 @@ public interface LfdClientService {
     List<ClientDto> getAdvisorClients(String advisorId);
     ClientDto getClientById(String clientId);
     List<AccountDto> getClientAccounts(String clientId);
+    AccountDto getAccountInfo(String accountId);
     HoldingsResponseDto getAccountHoldings(String accountId, Pageable pageable);
     PortfolioSummaryDto getPortfolioSummary(String accountId);
 }
