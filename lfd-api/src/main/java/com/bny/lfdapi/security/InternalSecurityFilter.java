@@ -58,6 +58,7 @@ public class InternalSecurityFilter implements Filter {
         String userId = request.getHeader("X-User-ID");
         String advisorId = request.getHeader("X-Advisor-ID");
         String requestId = request.getHeader("X-Request-ID");
+        String timestamp = request.getHeader("X-Timestamp");
         
         if (!StringUtils.hasText(userId)) {
             throw new ValidationException("X-User-ID header is required");
@@ -69,6 +70,10 @@ public class InternalSecurityFilter implements Filter {
         
         if (!StringUtils.hasText(requestId)) {
             throw new ValidationException("X-Request-ID header is required");
+        }
+        
+        if (!StringUtils.hasText(timestamp)) {
+            throw new ValidationException("X-Timestamp header is required");
         }
     }
 }
