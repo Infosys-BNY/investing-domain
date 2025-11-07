@@ -18,7 +18,7 @@ public class HoldingsDataIntegrationTest extends IntegrationTestBase {
     
     @Test
     void testGetAccountHoldings_DomainToLfdCommunication() {
-        String accountId = "acc-001";
+        String accountId = "ACC001";
         
         HoldingsResponseDto response = holdingsService.getAccountHoldings(accountId, PageRequest.of(0, 50));
         
@@ -38,7 +38,7 @@ public class HoldingsDataIntegrationTest extends IntegrationTestBase {
     
     @Test
     void testGetAccountHoldings_VerifyStoredProcedureExecution() {
-        String accountId = "acc-001";
+        String accountId = "ACC001";
         
         HoldingsResponseDto response = holdingsService.getAccountHoldings(accountId, PageRequest.of(0, 50));
         
@@ -50,7 +50,7 @@ public class HoldingsDataIntegrationTest extends IntegrationTestBase {
     
     @Test
     void testGetPortfolioSummary_DomainToLfdCommunication() {
-        String accountId = "acc-001";
+        String accountId = "ACC001";
         
         PortfolioSummaryDto response = holdingsService.getPortfolioSummary(accountId);
         
@@ -65,7 +65,7 @@ public class HoldingsDataIntegrationTest extends IntegrationTestBase {
     
     @Test
     void testGetAccountHoldings_DtoTransformation() {
-        String accountId = "acc-001";
+        String accountId = "ACC001";
         
         HoldingsResponseDto response = holdingsService.getAccountHoldings(accountId, PageRequest.of(0, 10));
         

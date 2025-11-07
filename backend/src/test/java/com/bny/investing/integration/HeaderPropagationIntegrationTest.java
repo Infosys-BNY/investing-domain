@@ -28,7 +28,7 @@ public class HeaderPropagationIntegrationTest extends IntegrationTestBase {
         assertNotNull(restLfdClientService, 
             "RestLfdClientService should be active (ensure app.mock.enabled=false)");
         
-        String advisorId = "advisor-001";
+        String advisorId = "ADV001";
         
         try {
             var clients = restLfdClientService.getAdvisorClients(advisorId);
@@ -42,7 +42,7 @@ public class HeaderPropagationIntegrationTest extends IntegrationTestBase {
     @Test
     void testLfdApiValidatesHeaders() {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8081/internal/advisors/advisor-001/clients?pageOffset=0&pageSize=50";
+        String url = "http://localhost:8081/internal/advisors/ADV001/clients?pageOffset=0&pageSize=50";
         
         try {
             restTemplate.getForEntity(url, String.class);
@@ -57,12 +57,12 @@ public class HeaderPropagationIntegrationTest extends IntegrationTestBase {
     @Test
     void testLfdApiValidatesMissingXTimestamp() {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8081/internal/advisors/advisor-001/clients?pageOffset=0&pageSize=50";
+        String url = "http://localhost:8081/internal/advisors/ADV001/clients?pageOffset=0&pageSize=50";
         
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("X-User-ID", "test-user");
-        headers.set("X-Advisor-ID", "advisor-001");
+        headers.set("X-Advisor-ID", "ADV001");
         headers.set("X-Request-ID", UUID.randomUUID().toString());
         
         HttpEntity<?> entity = new HttpEntity<>(headers);

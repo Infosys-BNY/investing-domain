@@ -38,6 +38,9 @@ public class RestLfdClientService implements LfdClientService {
     @Value("${lfd.api.base-url:http://localhost:8081}")
     private String lfdApiBaseUrl;
     
+    @Value("${lfd.api.max-page-size:100}")
+    private int maxPageSize;
+    
     @Override
     public List<ClientDto> getAdvisorClients(String advisorId) {
         String url = lfdApiBaseUrl + "/internal/advisors/" + advisorId + "/clients";
@@ -49,7 +52,7 @@ public class RestLfdClientService implements LfdClientService {
         
         try {
             ResponseEntity<LfdAdvisorClientsResponse> response = restTemplate.exchange(
-                url + "?pageOffset=0&pageSize=1000",
+                url + "?pageOffset=0&pageSize=" + maxPageSize,
                 HttpMethod.GET,
                 entity,
                 LfdAdvisorClientsResponse.class
@@ -62,12 +65,12 @@ public class RestLfdClientService implements LfdClientService {
             }
             return List.of();
         } catch (HttpClientErrorException e) {
-            log.error("Error calling LFD API for advisor clients: {} - {}", 
-                e.getStatusCode(), e.getMessage());
-            throw new ResourceNotFoundException("Failed to retrieve clients for advisor: " + advisorId);
+            log.error("HTTP Error calling LFD API for advisor clients: {} - {} - Response Body: {}", 
+                e.getStatusCode(), e.getMessage(), e.getResponseBodyAsString());
+            throw new ResourceNotFoundException("Failed to retrieve clients for advisor: " + advisorId + " - HTTP " + e.getStatusCode());
         } catch (Exception e) {
-            log.error("Unexpected error calling LFD API for advisor clients", e);
-            throw new ResourceNotFoundException("Failed to retrieve clients for advisor: " + advisorId);
+            log.error("Unexpected error calling LFD API for advisor clients: {}", e.getMessage(), e);
+            throw new ResourceNotFoundException("Failed to retrieve clients for advisor: " + advisorId + " - " + e.getMessage());
         }
     }
     

@@ -17,7 +17,7 @@ public class ClientDataIntegrationTest extends IntegrationTestBase {
     
     @Test
     void testGetAdvisorClients_DomainToLfdCommunication() {
-        String advisorId = "advisor-001";
+        String advisorId = "ADV001";
         
         PaginatedResponse<ClientDto> response = clientService.getAdvisorClients(advisorId, 0, 50);
         
@@ -38,7 +38,7 @@ public class ClientDataIntegrationTest extends IntegrationTestBase {
     
     @Test
     void testGetAdvisorClients_VerifyStoredProcedureExecution() {
-        String advisorId = "advisor-001";
+        String advisorId = "ADV001";
         
         PaginatedResponse<ClientDto> response = clientService.getAdvisorClients(advisorId, 0, 50);
         
@@ -50,7 +50,7 @@ public class ClientDataIntegrationTest extends IntegrationTestBase {
     
     @Test
     void testGetAdvisorClients_Pagination() {
-        String advisorId = "advisor-001";
+        String advisorId = "ADV001";
         
         PaginatedResponse<ClientDto> page1 = clientService.getAdvisorClients(advisorId, 0, 2);
         assertNotNull(page1);

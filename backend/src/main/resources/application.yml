@@ -68,3 +68,4 @@ app:
 lfd:
   api:
     base-url: ${LFD_API_BASE_URL:http://localhost:8081}
+    max-page-size: ${LFD_API_MAX_PAGE_SIZE:100}
