@@ -109,14 +109,21 @@ public class HoldingsDataService {
             .symbol((String) row.get("symbol"))
             .securityName((String) row.get("security_name"))
             .assetClass((String) row.get("asset_class"))
+            .sector((String) row.get("sector"))
             .quantity((BigDecimal) row.get("quantity"))
             .costBasis((BigDecimal) row.get("cost_basis"))
+            .totalCost((BigDecimal) row.get("total_cost"))
             .currentPrice((BigDecimal) row.get("current_price"))
+            .priceChange((BigDecimal) row.get("price_change"))
+            .priceChangePercent((BigDecimal) row.get("price_change_percent"))
             .marketValue((BigDecimal) row.get("market_value"))
             .unrealizedGainLoss((BigDecimal) row.get("unrealized_gain_loss"))
             .unrealizedGainLossPercent((BigDecimal) row.get("unrealized_gain_loss_percent"))
+            .portfolioPercent((BigDecimal) row.get("portfolio_percent"))
             .purchaseDate(convertToLocalDate(row.get("purchase_date")))
             .priceDate(convertToLocalDate(row.get("price_date")))
+            .hasAlerts(convertToBoolean(row.get("has_alerts")))
+            .taxLotCount(convertToInteger(row.get("tax_lot_count")))
             .build();
     }
 
@@ -221,5 +228,16 @@ public class HoldingsDataService {
             return (LocalDate) value;
         }
         return null;
+    }
+    
+    private Boolean convertToBoolean(Object value) {
+        if (value == null) return false;
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).intValue() != 0;
+        }
+        return Boolean.parseBoolean(value.toString());
     }
 }

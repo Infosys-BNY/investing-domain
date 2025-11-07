@@ -39,16 +39,27 @@ BEGIN
         c.client_name,
         c.advisor_id,
         'Unknown Advisor' as advisor_name,
+        (SELECT JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'accountId', a.account_id,
+                'accountNumber', a.account_number,
+                'accountType', a.account_type,
+                'clientId', a.client_id,
+                'clientName', c.client_name,
+                'marketValue', a.market_value,
+                'cashBalance', a.cash_balance,
+                'ytdPerformance', a.ytd_performance,
+                'riskProfile', a.risk_profile,
+                'lastUpdated', a.last_updated
+            )
+        ) FROM accounts a WHERE a.client_id = c.client_id) as accounts,
         (SELECT COUNT(*) FROM accounts a WHERE a.client_id = c.client_id) as account_count,
-        COALESCE(SUM(a.market_value), 0) as total_market_value,
-        'Active' as activity_status,
-        'MODERATE' as risk_profile,
-        c.created_date as last_activity_date,
-        c.created_date
+        COALESCE((SELECT SUM(a.market_value) FROM accounts a WHERE a.client_id = c.client_id), 0) as total_market_value,
+        c.tax_id,
+        c.created_date,
+        c.last_updated
     FROM clients c
-    LEFT JOIN accounts a ON c.client_id = a.client_id
     WHERE c.advisor_id = p_advisor_id
-    GROUP BY c.client_id, c.client_name, c.advisor_id, c.created_date
     ORDER BY c.client_name
     LIMIT p_page_size OFFSET p_page_offset;
 END$$
@@ -80,16 +91,27 @@ BEGIN
         c.client_name,
         c.advisor_id,
         'Unknown Advisor' as advisor_name,
+        (SELECT JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'accountId', a.account_id,
+                'accountNumber', a.account_number,
+                'accountType', a.account_type,
+                'clientId', a.client_id,
+                'clientName', c.client_name,
+                'marketValue', a.market_value,
+                'cashBalance', a.cash_balance,
+                'ytdPerformance', a.ytd_performance,
+                'riskProfile', a.risk_profile,
+                'lastUpdated', a.last_updated
+            )
+        ) FROM accounts a WHERE a.client_id = c.client_id) as accounts,
         (SELECT COUNT(*) FROM accounts a WHERE a.client_id = c.client_id) as account_count,
-        COALESCE(SUM(a.market_value), 0) as total_market_value,
-        'Active' as activity_status,
-        'MODERATE' as risk_profile,
-        c.created_date as last_activity_date,
-        c.created_date
+        COALESCE((SELECT SUM(a.market_value) FROM accounts a WHERE a.client_id = c.client_id), 0) as total_market_value,
+        c.tax_id,
+        c.created_date,
+        c.last_updated
     FROM clients c
-    LEFT JOIN accounts a ON c.client_id = a.client_id
     WHERE c.advisor_id = p_advisor_id
-    GROUP BY c.client_id, c.client_name, c.advisor_id, c.created_date
     ORDER BY c.client_name
     LIMIT p_page_size OFFSET p_page_offset;
 END$$
@@ -109,6 +131,14 @@ CREATE PROCEDURE `sp_get_account_holdings`(
 )
 BEGIN
     DECLARE v_total_count INT DEFAULT 0;
+    DECLARE v_total_portfolio_value DECIMAL(19,4) DEFAULT 0;
+    
+    -- Calculate total portfolio value for percentage calculations
+    SELECT COALESCE(SUM(h2.quantity * s2.current_price), 0)
+    INTO v_total_portfolio_value
+    FROM holdings h2
+    JOIN securities s2 ON h2.symbol = s2.symbol
+    WHERE h2.account_id = p_account_id;
     
     -- Get total count
     SELECT COUNT(*) INTO v_total_count
@@ -125,9 +155,13 @@ BEGIN
         h.symbol,
         s.security_name,
         s.asset_class,
+        s.sector,
         h.quantity,
         h.cost_basis,
+        h.cost_basis as total_cost,
         s.current_price,
+        s.price_change,
+        s.price_change_percent,
         (h.quantity * s.current_price) as market_value,
         (h.quantity * s.current_price - h.cost_basis) as unrealized_gain_loss,
         CASE 
@@ -135,8 +169,15 @@ BEGIN
                 ROUND(((h.quantity * s.current_price - h.cost_basis) / h.cost_basis) * 100, 2)
             ELSE 0 
         END as unrealized_gain_loss_percent,
+        CASE 
+            WHEN v_total_portfolio_value > 0 THEN
+                ROUND(((h.quantity * s.current_price) / v_total_portfolio_value) * 100, 2)
+            ELSE 0
+        END as portfolio_percent,
         h.purchase_date,
-        CURRENT_DATE() as price_date
+        CURRENT_DATE() as price_date,
+        FALSE as has_alerts,
+        1 as tax_lot_count
     FROM holdings h
     JOIN securities s ON h.symbol = s.symbol
     WHERE h.account_id = p_account_id

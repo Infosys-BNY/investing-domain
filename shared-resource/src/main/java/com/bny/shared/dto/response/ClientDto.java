@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -32,7 +33,12 @@ public class ClientDto {
     
     private Integer accountCount;
     
+    private List<AccountDto> accounts;
+    
     private java.math.BigDecimal totalMarketValue;
+    
+    @Size(max = 50, message = "Tax ID must not exceed 50 characters")
+    private String taxId;
     
     @Size(max = 50, message = "Activity status must not exceed 50 characters")
     private String activityStatus;
