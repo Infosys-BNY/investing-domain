@@ -9,7 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatChipsModule, MatChipListboxChange } from '@angular/material/chips';
 import { FormsModule } from '@angular/forms';
 import { HoldingsService } from '../services';
 import { 
@@ -178,8 +178,8 @@ export class HoldingsViewComponent implements OnInit, OnDestroy {
     this.sortDirection.set(sort.direction as 'asc' | 'desc' || 'asc');
   }
 
-  onFilterChange(event: { value: FilterType }): void {
-    this.activeFilter.set(event.value);
+  onFilterChange(event: MatChipListboxChange): void {
+    this.activeFilter.set(event.value as FilterType);
   }
 
   applyFilter(filter: FilterType): void {
@@ -220,7 +220,7 @@ export class HoldingsViewComponent implements OnInit, OnDestroy {
     if (!accountId) return;
 
     this.exporting.set(true);
-    this.holdingsService.exportHoldings(accountId, format, this.filteredAndSortedHoldings()).subscribe({
+    this.holdingsService.exportHoldings(accountId, format).subscribe({
       next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');

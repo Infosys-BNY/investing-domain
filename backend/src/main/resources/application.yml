@@ -58,7 +58,7 @@ logging:
 
 app:
   mock:
-    enabled: true
+    enabled: false
   jwt:
     secret: ${JWT_SECRET:dGhpc2lzYXRlc3RzZWNyZXRrZXlmb3JkZXZlbG9wbWVudHB1cnBvc2VzMTIzNDU2Nzg5MA==}
     expiration: 900000

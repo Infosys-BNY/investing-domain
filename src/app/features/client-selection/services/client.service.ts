@@ -1,48 +1,77 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of, delay, map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
-import { Client, ClientListResponse } from '../models';
-import { MOCK_CLIENT_LIST_RESPONSE, MOCK_RECENT_CLIENTS } from './mock-client-data';
+import { Client, ClientListResponse, SpringPageResponse } from '../models';
 
+/**
+ * Client Service - Connected to Domain API
+ * All mocks removed - using real backend data
+ */
 @Injectable()
 export class ClientService {
   private readonly api = inject(ApiService);
-  private readonly useMockData = true;
   
+  /**
+   * Search clients by query string
+   * Note: Backend doesn't have a search endpoint yet, so we fetch all and filter client-side
+   */
   searchClients(query: string): Observable<Client[]> {
-    if (this.useMockData) {
-      return of(MOCK_CLIENT_LIST_RESPONSE.clients).pipe(
-        map(clients => clients.filter(client =>
-          client.clientName.toLowerCase().includes(query.toLowerCase()) ||
-          client.accounts.some(acc => acc.accountId.toLowerCase().includes(query.toLowerCase()))
-        )),
-        delay(300)
-      );
-    }
-    return this.api.get<ClientListResponse>(`clients/search`, { query })
+    // For now, get all clients and filter client-side
+    // TODO: Add backend search endpoint for better performance
+    return this.api.get<SpringPageResponse<Client>>(`advisor/ADV001/clients`)
       .pipe(
-        map(response => response.clients)
+        map(response => response.content.filter(client =>
+          client.clientName.toLowerCase().includes(query.toLowerCase()) ||
+          client.clientId.toLowerCase().includes(query.toLowerCase())
+        ))
       );
   }
   
-  getClientList(advisorId: string, page = 1, pageSize = 50): Observable<ClientListResponse> {
-    if (this.useMockData) {
-      return of(MOCK_CLIENT_LIST_RESPONSE).pipe(delay(500));
-    }
-    return this.api.get<ClientListResponse>(`advisor/${advisorId}/clients`, { page, pageSize });
+  /**
+   * Get paginated client list for an advisor
+   * Maps Spring Page response to ClientListResponse
+   */
+  getClientList(advisorId: string, page = 0, pageSize = 50): Observable<ClientListResponse> {
+    return this.api.get<SpringPageResponse<Client>>(`advisor/${advisorId}/clients`, { page, size: pageSize })
+      .pipe(
+        map(springPage => ({
+          clients: springPage.content,
+          totalCount: springPage.totalElements,
+          pageInfo: {
+            currentPage: (springPage.number ?? 0) + 1, // Spring pages are 0-indexed, UI is 1-indexed
+            pageSize: springPage.size,
+            totalPages: springPage.totalPages,
+            totalRecords: springPage.totalElements
+          }
+        }))
+      );
   }
   
+  /**
+   * Get recent clients for an advisor
+   * Note: Backend doesn't have a recent-clients endpoint, so we return the first 5 clients
+   */
   getRecentClients(advisorId: string): Observable<Client[]> {
-    if (this.useMockData) {
-      return of(MOCK_RECENT_CLIENTS).pipe(delay(300));
-    }
-    return this.api.get<Client[]>(`advisor/${advisorId}/recent-clients`);
+    // Backend doesn't have a recent-clients endpoint yet
+    // Return first 5 clients as "recent" for now
+    return this.api.get<SpringPageResponse<Client>>(`advisor/${advisorId}/clients`, { page: 0, size: 5 })
+      .pipe(
+        map(response => response.content)
+      );
   }
   
+  /**
+   * Log client access for audit trail
+   * Note: Backend doesn't have audit endpoint yet - this is a no-op
+   */
   logClientAccess(clientId: string): Observable<void> {
-    if (this.useMockData) {
-      return of(void 0).pipe(delay(100));
-    }
-    return this.api.post<void>('audit/client-access', { clientId, timestamp: new Date().toISOString() });
+    // Backend doesn't have audit endpoint yet
+    // Return empty observable for now
+    // TODO: Implement audit logging endpoint
+    return new Observable(observer => {
+      console.log(`Client access logged: ${clientId}`);
+      observer.next();
+      observer.complete();
+    });
   }
 }

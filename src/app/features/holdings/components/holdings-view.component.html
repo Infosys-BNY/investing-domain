@@ -95,7 +95,7 @@
     <section class="holdings-content">
       <div class="toolbar">
         <div class="filter-section">
-          <mat-chip-listbox [value]="activeFilter()" (selectionChange)="onFilterChange($event)">
+          <mat-chip-listbox [value]="activeFilter()" (selectionChange)="onFilterChange($any($event))">
             <mat-chip-option value="all" selected>Show All</mat-chip-option>
             <mat-chip-option value="gains">Gains Only</mat-chip-option>
             <mat-chip-option value="losses">Losses Only</mat-chip-option>
