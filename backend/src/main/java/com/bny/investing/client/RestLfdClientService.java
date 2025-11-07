@@ -23,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -172,15 +173,33 @@ public class RestLfdClientService implements LfdClientService {
     }
     
     private ClientDto transformToBackendClientDto(com.bny.shared.dto.response.ClientDto sharedClient) {
+        List<AccountDto> backendAccounts = new ArrayList<>();
+        if (sharedClient.getAccounts() != null) {
+            backendAccounts = sharedClient.getAccounts().stream()
+                .map(this::transformToBackendAccountDto)
+                .collect(Collectors.toList());
+        }
+        
         return ClientDto.builder()
             .clientId(sharedClient.getClientId())
             .clientName(sharedClient.getClientName())
             .advisorId(sharedClient.getAdvisorId())
             .advisorName(sharedClient.getAdvisorName())
             .totalMarketValue(sharedClient.getTotalMarketValue())
-            .riskProfile(parseRiskProfile(sharedClient.getRiskProfile()))
-            .lastAccessed(sharedClient.getLastAccessed())
-            .accounts(List.of())
+            .taxId(sharedClient.getTaxId())
+            .accounts(backendAccounts)
+            .build();
+    }
+    
+    private AccountDto transformToBackendAccountDto(com.bny.shared.dto.response.AccountDto sharedAccount) {
+        return AccountDto.builder()
+            .accountId(sharedAccount.getAccountId())
+            .accountNumber(sharedAccount.getAccountNumber())
+            .accountType(parseAccountType(sharedAccount.getAccountType()))
+            .marketValue(sharedAccount.getMarketValue())
+            .cashBalance(sharedAccount.getCashBalance())
+            .ytdPerformance(sharedAccount.getYtdPerformance())
+            .lastActivity(sharedAccount.getLastUpdated())
             .build();
     }
     
@@ -204,6 +223,18 @@ public class RestLfdClientService implements LfdClientService {
             return com.bny.investing.model.AssetClass.valueOf(assetClassStr.toUpperCase());
         } catch (IllegalArgumentException e) {
             log.warn("Invalid asset class value: {}", assetClassStr);
+            return null;
+        }
+    }
+    
+    private com.bny.investing.model.AccountType parseAccountType(com.bny.shared.enums.AccountType accountType) {
+        if (accountType == null) {
+            return null;
+        }
+        try {
+            return com.bny.investing.model.AccountType.valueOf(accountType.name());
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid account type value: {}", accountType);
             return null;
         }
     }
@@ -258,12 +289,18 @@ public class RestLfdClientService implements LfdClientService {
             .securityName(sharedHolding.getSecurityName())
             .quantity(sharedHolding.getQuantity())
             .currentPrice(sharedHolding.getCurrentPrice())
+            .priceChange(sharedHolding.getPriceChange())
+            .priceChangePercent(sharedHolding.getPriceChangePercent())
             .costBasis(sharedHolding.getCostBasis())
+            .totalCost(sharedHolding.getTotalCost())
             .marketValue(sharedHolding.getMarketValue())
             .unrealizedGainLoss(sharedHolding.getUnrealizedGainLoss())
             .unrealizedGainLossPercent(sharedHolding.getUnrealizedGainLossPercent())
+            .portfolioPercent(sharedHolding.getPortfolioPercent())
             .sector(sharedHolding.getSector())
             .assetClass(parseAssetClass(sharedHolding.getAssetClass()))
+            .hasAlerts(sharedHolding.getHasAlerts() != null ? sharedHolding.getHasAlerts() : false)
+            .taxLotCount(sharedHolding.getTaxLotCount() != null ? sharedHolding.getTaxLotCount() : 1)
             .build();
     }
     

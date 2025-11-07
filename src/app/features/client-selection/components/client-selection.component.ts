@@ -103,7 +103,8 @@ export class ClientSelectionComponent implements OnInit {
 
   loadClients(): void {
     this.loading.set(true);
-    this.clientService.getClientList('advisor-123').subscribe({
+    // Using ADV001 - the advisor ID from our test data
+    this.clientService.getClientList('ADV001').subscribe({
       next: (response) => {
         this.clients.set(response.clients);
         this.loading.set(false);
@@ -116,7 +117,8 @@ export class ClientSelectionComponent implements OnInit {
   }
 
   loadRecentClients(): void {
-    this.clientService.getRecentClients('advisor-123').subscribe({
+    // Using ADV001 - the advisor ID from our test data
+    this.clientService.getRecentClients('ADV001').subscribe({
       next: (clients) => {
         this.recentClients.set(clients.slice(0, 5));
       },

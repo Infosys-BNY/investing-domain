@@ -31,7 +31,14 @@ public class HoldingDto {
     private BigDecimal quantity;
     
     private BigDecimal currentPrice;
+    
+    private BigDecimal priceChange;
+    
+    private BigDecimal priceChangePercent;
+    
     private BigDecimal costBasis;
+    
+    private BigDecimal totalCost;
     private BigDecimal marketValue;
     private BigDecimal unrealizedGainLoss;
     private BigDecimal unrealizedGainLossPercent;
@@ -46,4 +53,8 @@ public class HoldingDto {
     private LocalDate purchaseDate;
     
     private LocalDate priceDate;
+    
+    private Boolean hasAlerts;
+    
+    private Integer taxLotCount;
 }

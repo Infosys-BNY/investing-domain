@@ -4,3 +4,4 @@ export * from './account.model';
 export * from './client.model';
 export * from './page-info.model';
 export * from './client-list-response.model';
+export * from './spring-page-response.model';

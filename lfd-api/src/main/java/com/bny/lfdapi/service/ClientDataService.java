@@ -4,6 +4,7 @@ import com.bny.shared.dto.request.ClientSearchRequest;
 import com.bny.lfdapi.dto.response.AdvisorClientsResponse;
 import com.bny.lfdapi.dto.response.ClientSearchResponse;
 import com.bny.shared.dto.response.ClientDto;
+import com.bny.shared.dto.response.AccountDto;
 import com.bny.shared.dto.common.StoredProcedureRequest;
 import com.bny.shared.dto.common.StoredProcedureResponse;
 import com.bny.shared.exception.DatabaseOperationException;
@@ -118,18 +119,38 @@ public class ClientDataService {
     }
 
     private ClientDto mapRowToClientDto(Map<String, Object> row) {
-        return ClientDto.builder()
+        ClientDto dto = ClientDto.builder()
             .clientId((String) row.get("client_id"))
             .clientName((String) row.get("client_name"))
             .advisorId((String) row.get("advisor_id"))
             .advisorName((String) row.get("advisor_name"))
             .accountCount(convertToInteger(row.get("account_count")))
             .totalMarketValue((java.math.BigDecimal) row.get("total_market_value"))
+            .taxId((String) row.get("tax_id"))
             .activityStatus((String) row.get("activity_status"))
             .riskProfile((String) row.get("risk_profile"))
             .lastActivityDate(convertToLocalDate(row.get("last_activity_date")))
             .createdDate(convertToLocalDateTime(row.get("created_date")))
+            .lastAccessed(convertToLocalDateTime(row.get("last_accessed")))
             .build();
+        
+        String accountsJson = (String) row.get("accounts");
+        if (accountsJson != null && !accountsJson.isEmpty()) {
+            try {
+                List<AccountDto> accounts = objectMapper.readValue(
+                    accountsJson, 
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, AccountDto.class)
+                );
+                dto.setAccounts(accounts);
+            } catch (Exception e) {
+                log.error("Failed to parse accounts JSON for client: {}", dto.getClientId(), e);
+                dto.setAccounts(new ArrayList<>());
+            }
+        } else {
+            dto.setAccounts(new ArrayList<>());
+        }
+        
+        return dto;
     }
 
     private Integer extractTotalCount(StoredProcedureResponse response) {

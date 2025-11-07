@@ -2,6 +2,7 @@ package com.bny.shared.dto.response;
 
 import com.bny.shared.enums.AccountType;
 import com.bny.shared.enums.RiskProfile;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,5 +44,6 @@ public class AccountDto {
     
     private RiskProfile riskProfile;
     
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     private LocalDateTime lastUpdated;
 }
