@@ -1,5 +1,7 @@
 # BNY Advisor Portfolio Management Platform
 
+<!-- Verification: Repository access and PR workflow test -->
+
 ## Overview
 
 A modern web application designed for Bank of New York Mellon (BNY) financial advisors to efficiently manage client investment portfolios, analyze holdings, and identify optimization opportunities including tax loss harvesting strategies.
